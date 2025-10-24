@@ -1,0 +1,9 @@
+.idea/
+.vscode/
+
+.venv/
+venv/
+.env
+
+/centrifugo/config.json
+data/
