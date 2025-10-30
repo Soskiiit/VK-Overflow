@@ -1,5 +1,5 @@
-from django.shortcuts import HttpResponse
+from django.shortcuts import render
 
 
 def index(request):
-    return HttpResponse('meow')  # render(request, 'questions/index.html')
+    return render(request, 'questions/index.html')

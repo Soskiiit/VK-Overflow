@@ -1,6 +1,7 @@
 from os import getenv
 from pathlib import Path
 
+from django.conf import settings
 from dotenv import load_dotenv
 
 
@@ -11,6 +12,7 @@ SECRET_KEY = getenv('DJANGO_SECRET_KEY')
 
 DEBUG = getenv('DJANGO_DEBUG', '0').lower() in ('1', 'true', 't', 'y', 'yes')
 ALLOWED_HOSTS = list(getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(','))
+INTERNAL_IPS = list(getenv('DJANGO_INTERNAL_IPS', '127.0.0.1,localhost').split(','))
 
 if DEBUG:
     ALLOWED_HOSTS = ['*']
@@ -39,16 +41,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 3rd party middlewares
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
 ]
+
+if settings.DEBUG:
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+
 
 ROOT_URLCONF = 'VK_Overflow.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,5 +108,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static_dev",
+]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

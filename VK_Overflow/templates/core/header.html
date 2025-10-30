@@ -1,0 +1,27 @@
+{% load static %}
+<header class="p-3 mb-3 border-bottom">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between justify-content-lg-between">
+            <a href="#" class="nav-link px-2 fs-5 link-secondary">VK Overflow</a>
+            <form class="col-12 col-lg-9 mb-3 mb-lg-0 me-lg-3" role="search">
+                <input type="search" class="form-control search-bar" placeholder="Найти вопрос" aria-label="Search">
+            </form>
+            <div class="dropdown text-end">
+                <a href="#"
+                   class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+                   data-bs-toggle="dropdown" aria-expanded="false"> <img
+                        src="{% static "assets/default-avatar.png" %}" alt="mdo" width="40" height="40"
+                        class="rounded-circle"> </a>
+                <ul class="dropdown-menu text-small">
+                    <li><a class="dropdown-item" href="#">Задать вопрос</a></li>
+                    <li><a class="dropdown-item" href="#">Настройки</a></li>
+                    <li><a class="dropdown-item" href="#">Профиль</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" style="color: firebrick;" href="#">Выйти из аккаунта</a></li>
+                    </ul>
+            </div>
+        </div>
+    </div>
+</header>
