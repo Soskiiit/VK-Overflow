@@ -1,5 +1,6 @@
 {% load static %}
-<div class="container p-3" style="border-radius: 1em; border: solid black 1px">
+{# We will use middleware or context processors and for loop, that's wiil be best solution #}
+<div class="container p-3" style="border-radius: 1em; border: solid darkgray 1px">
     <p class="fs-4">Популярные теги</p>
     <div class="d-flex flex-wrap col-12 gap-1 p-1 justify-content-start">
         <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">XD</span>
@@ -20,6 +21,16 @@
         <span class="badge bg-info-subtle text-info-emphasis rounded-pill">really</span>
         <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill">cool</span>
         <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill">theme</span>
+    </div>
+</div>
 
+<div class="container p-3" style="border-radius: 1em; border: solid darkgray 1px; margin-top: 1rem;">
+    <p class="fs-4">Активные пользователи</p>
+    <div class="d-flex flex-column col-12 gap-1 p-1 justify-content-start fs-6">
+        <a style="color: orangered">Hindu</a>
+        <a style="color: darkslategray">Mr. Freeman</a>
+        <a style="color: darkslategray">Code master</a>
+        <a style="color: dimgrey">Linus Torvalds</a>
+        <a style="color: dimgrey">Just a moder</a>
     </div>
 </div>

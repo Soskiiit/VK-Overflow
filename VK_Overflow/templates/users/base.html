@@ -9,26 +9,21 @@
 
     <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap/bootstrap.min.css" %}">
     <link rel="stylesheet" type="text/css" href="{% static "css/theme.css" %}">
-
     {% block styles %}{% endblock %}
 </head>
 <body>
 
-{% include 'core/header.html' %}
+<header class="p-3 mb-5 border-bottom">
+    <a href="{% url "homepage" %}" class="nav-link px-2 fs-5 link-secondary" style="margin-left: 8%;">VK Overflow</a>
+</header>
+
 
 <div class="container">
-<div class="row">
     <div class="container col-md-9" id="left-block">
         {% block content %}Welcome here \(^-^)/{% endblock %}
     </div>
-    <div class="container col-md-3" id="right-block">
-        {% include 'questions/popular-tags.html' %}
-    </div>
-</div>
 </div>
 <br>
-{% include 'core/footer.html' %}
-
 
 <script type="text/javascript" src="{% static "js/bootstrap/bootstrap.bundle.min.js" %}"></script>
 <script type="text/javascript" src="{% static "js/jquery/jquery-3.6.4.min.js" %}"></script>
