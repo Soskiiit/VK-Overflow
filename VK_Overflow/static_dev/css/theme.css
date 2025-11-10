@@ -148,3 +148,40 @@ footer {
     gap: 1rem;
     height: 100%;
 }
+
+.author-card {
+    margin: 3rem 0 0 .5rem;
+}
+
+.author-card > img {
+    width: 2.5rem;
+    margin-right: .5rem;
+}
+
+.answer-card {
+    padding: 1.5rem 1rem 3.5rem 2rem;
+    border: 1px solid darkgray;
+    border-radius: 1rem;
+    margin: 1rem auto;
+}
+
+.answer-author-card {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+}
+
+.answer-author-card > img {
+    width: 2.5rem;
+    margin-right: 1rem;
+}
+
+.answer-author-card > a {
+    color: black;
+    text-decoration: none;
+}
+
+.answer-card > p {
+    margin-top: 1.5rem;
+}

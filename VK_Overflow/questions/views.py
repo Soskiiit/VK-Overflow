@@ -11,3 +11,7 @@ def my_questions(request):
 
 def new_question(request):
     return render(request, 'questions/new-question.html')
+
+
+def view_question(request, question_id):
+    return render(request, 'questions/question.html')

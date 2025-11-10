@@ -1,0 +1,61 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block tab_title %}
+    Вопрос ...
+{% endblock tab_title %}
+
+{% block content %}
+    <div class="question-card">
+        <h3>Как это запустить?</h3>
+        <p>я запускаю-запускаю, а оно не запускается!</p>
+
+        <div class="author-card">
+            <img src="{% static 'assets/default-avatar.png' %}">
+            <a>Profile name!</a>
+        </div>
+
+        <br>
+        <div class="rating-block flex-row">
+            <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');" class="rating-up-clicked">
+            <a>77</a>
+            <img src="{% static "assets/arrow-down.svg" %}" onclick="alert('При клике мог бы уменьшиться рейтинг поста, но реализация того мне ещё и не снилась!');">
+        </div>
+    </div>
+    <div class="row justify-content-end">
+        <div class="col ps-5">
+            <div class="answer-card" style="padding: 1rem">
+                <textarea class="form-control mt-1" style="resize: none" id="description" rows="3" placeholder="Напишите свой ответ"></textarea>
+                <btn class="btn btn-outline-primary mt-3">Оставить ответ</btn>
+            </div>
+
+            <div class="answer-card">
+                <div class="answer-author-card">
+                    <img src="{% static 'assets/default-avatar.png' %}">
+                    <a class="fs-5">Genius author</a>
+                </div>
+                <p class="col-11">That's easy! why you're asking?</p>
+
+                <div class="rating-block flex-row" style="margin-right: 1rem; float: right;">
+                    <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');" class="rating-up-clicked">
+                    <a>7</a>
+                    <img src="{% static "assets/arrow-down.svg" %}" onclick="alert('При клике мог бы уменьшиться рейтинг поста, но реализация того мне ещё и не снилась!');">
+                </div>
+            </div>
+
+            <div class="answer-card">
+                <div class="answer-author-card">
+                    <img src="{% static 'assets/default-avatar.png' %}">
+                    <a class="fs-5">Newbie</a>
+                </div>
+                <p class="col-11">I have same problem!</p>
+
+                <div class="rating-block flex-row" style="margin-right: 1rem; float: right;">
+                    <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');">
+                    <a>0</a>
+                    <img src="{% static "assets/arrow-down.svg" %}" onclick="alert('При клике мог бы уменьшиться рейтинг поста, но реализация того мне ещё и не снилась!');">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
