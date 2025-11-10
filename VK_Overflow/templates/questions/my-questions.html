@@ -1,0 +1,53 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block tab_title %}VK Overflow{% endblock tab_title %}
+
+{% block content %}
+    <h3 style="margin-bottom: 1.8rem;">Мои вопросы</h3>
+    <div class="container flex-column">
+        <div class="question-card">
+            <h3>It's title</h3>
+            <a>some text here...</a>
+
+            <br><br>
+            <div class="rating-block flex-row">
+                <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');">
+                <a>68</a>
+                <img src="{% static "assets/arrow-down.svg" %}" onclick="alert('При клике мог бы уменьшиться рейтинг поста, но реализация того мне ещё и не снилась!');" class="rating-down-clicked">
+            </div>
+        </div>
+        <div class="question-card">
+            <h3>Как это запустить?</h3>
+            <a>я запускаю-запускаю, а оно не запускается!</a>
+
+            <br><br>
+            <div class="rating-block flex-row">
+                <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');" class="rating-up-clicked">
+                <a>77</a>
+                <img src="{% static "assets/arrow-down.svg" %}" onclick="alert('При клике мог бы уменьшиться рейтинг поста, но реализация того мне ещё и не снилась!');">
+            </div>
+        </div>
+        <div class="question-card">
+            <h3>Этот вопрос никто не заметит</h3>
+            <a>Все пропустят его, никто не даст ответа, никто мне не поможет...</a>
+
+            <br><br>
+            <div class="rating-block flex-row">
+                <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');">
+                <a>0</a>
+                <img src="{% static "assets/arrow-down.svg" %}" onclick="alert('При клике мог бы уменьшиться рейтинг поста, но реализация того мне ещё и не снилась!');">
+            </div>
+        </div>
+    </div>
+    <ul class="pagination">
+        <li><a href="#"><img src="{% static 'assets/arrow-left.svg' %}"></a></li>
+        <li class="active-page"><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li><a href="#">3</a></li>
+        <li><a href="#">4</a></li>
+        <li><a href="#">5</a></li>
+        <li><a href="#"><img src="{% static 'assets/arrow-right.svg' %}"></a></li>
+    </ul>
+
+{% endblock content %}

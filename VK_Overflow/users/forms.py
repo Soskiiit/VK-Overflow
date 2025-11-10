@@ -41,7 +41,6 @@ class RegistrationForm(forms.ModelForm):
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
-
         if User.objects.filter(username=username).exists():
             raise ValidationError(
                 'Пользователь с таким именем уже существует.',
@@ -84,7 +83,6 @@ class RegistrationForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-
         if 'password' in cleaned_data and 'password_repeat' in cleaned_data:
             if cleaned_data['password'] != cleaned_data['password_repeat']:
                 self.add_error('password_repeat', 'Пароли не совпадают.')
@@ -95,3 +93,18 @@ class RegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'username')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['username'].disabled = True
+            self.fields['username'].help_text = "Имя пользователя изменить нельзя."
+    # Надо бы начать писать формы, прикручивать их сразу к страничкам, реализоавть всё сразу
+    # Но дедлайн через 2 дня кричит: КОПИ ТЕХДОЛГ!
+    # TODO

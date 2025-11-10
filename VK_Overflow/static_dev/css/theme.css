@@ -139,3 +139,12 @@ footer {
 .forget-btn:hover {
     color: #222;
 }
+
+
+.edit-profile-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 100%;
+}

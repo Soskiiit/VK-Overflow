@@ -1,7 +1,8 @@
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import HttpResponse, redirect, render
 
-from .forms import LoginForm, RegistrationForm
+from .forms import EditProfileForm, LoginForm, RegistrationForm
 
 
 def login_view(request):
@@ -38,3 +39,9 @@ def logout_view(request):
 
 def reset_password(request):
     return HttpResponse('<h1>Забыли пароль? Очень-очень жаль!</h1>')
+
+
+@login_required
+def edit_profile(request):
+    form = EditProfileForm(request.POST, instance=request.user)
+    return render(request, 'users/edit-profile.html', context={'form': form})

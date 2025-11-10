@@ -15,8 +15,15 @@
    docker run --rm -v$PWD:/centrifugo centrifugo/centrifugo:v6 centrifugo genconfig
     ```
 4. Configure centrifugo, by editing ./centrifugo/config.json
-5. Configure Django backend (I'll update this point later 🥸) (don't forget migrations!!)
-6. Install requirements with
+5. Configure Django backend (I'll update this point later 🥸) 
+6. Start up postgres and apply migrations
+    ```shell
+   docker compose up
+    ```
+    ```shell
+    python ./manage.py migrate
+    ```
+7. Install requirements with
     ```shell
     pip install -r requirements_dev.txt
     ```
@@ -42,7 +49,7 @@
 ####     Starting up
    1. **Start all requirements with executing**
        ```shell
-       docker-compose up
+       docker compose up
        ```
    2. **Run Django server**
       - Open new terminal and execute...

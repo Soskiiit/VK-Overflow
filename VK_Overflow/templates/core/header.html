@@ -14,9 +14,9 @@
                         src="{% static "assets/default-avatar.png" %}" alt="mdo" width="40" height="40"
                         class="rounded-circle"> </a>
                 <ul class="dropdown-menu text-small">
-                    <li><a class="dropdown-item" href="#">Профиль</a></li>
-                    <li><a class="dropdown-item" href="#">Задать вопрос</a></li>
-                    <li><a class="dropdown-item" href="#">Мои вопросы</a></li>
+                    <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Профиль</a></li>
+                    <li><a class="dropdown-item" href="{% url 'new_question' %}">Задать вопрос</a></li>
+                    <li><a class="dropdown-item" href="{% url 'my_questions' %}">Мои вопросы</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
