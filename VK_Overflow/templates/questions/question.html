@@ -7,18 +7,24 @@
 
 {% block content %}
     <div class="question-card">
-        <h3>Как это запустить?</h3>
-        <p>я запускаю-запускаю, а оно не запускается!</p>
+        <h3>{{ question.title }}</h3>
+        <p>{{ question.description }}</p>
+
+        <div class="flex-row">
+            {% for tag in question.tags %}
+            <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">{{ tag }}</span>
+            {% endfor %}
+        </div>
 
         <div class="author-card">
             <img src="{% static 'assets/default-avatar.png' %}">
-            <a>Profile name!</a>
+            <a>User {{ question.author_id }}</a>
         </div>
 
         <br>
         <div class="rating-block flex-row">
-            <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');" class="rating-up-clicked">
-            <a>77</a>
+            <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');">
+            <a>{{ question.rating }}</a>
             <img src="{% static "assets/arrow-down.svg" %}" onclick="alert('При клике мог бы уменьшиться рейтинг поста, но реализация того мне ещё и не снилась!');">
         </div>
     </div>
@@ -29,33 +35,21 @@
                 <btn class="btn btn-outline-primary mt-3">Оставить ответ</btn>
             </div>
 
+            {% for ans in answers %}
             <div class="answer-card">
                 <div class="answer-author-card">
                     <img src="{% static 'assets/default-avatar.png' %}">
-                    <a class="fs-5">Genius author</a>
+                    <a class="fs-5">User {{ ans.uid }}</a>
                 </div>
-                <p class="col-11">That's easy! why you're asking?</p>
-
-                <div class="rating-block flex-row" style="margin-right: 1rem; float: right;">
-                    <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');" class="rating-up-clicked">
-                    <a>7</a>
-                    <img src="{% static "assets/arrow-down.svg" %}" onclick="alert('При клике мог бы уменьшиться рейтинг поста, но реализация того мне ещё и не снилась!');">
-                </div>
-            </div>
-
-            <div class="answer-card">
-                <div class="answer-author-card">
-                    <img src="{% static 'assets/default-avatar.png' %}">
-                    <a class="fs-5">Newbie</a>
-                </div>
-                <p class="col-11">I have same problem!</p>
+                <p class="col-11">{{ ans.text }}</p>
 
                 <div class="rating-block flex-row" style="margin-right: 1rem; float: right;">
                     <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');">
-                    <a>0</a>
+                    <a>{{ ans.answer_rating }}</a>
                     <img src="{% static "assets/arrow-down.svg" %}" onclick="alert('При клике мог бы уменьшиться рейтинг поста, но реализация того мне ещё и не снилась!');">
                 </div>
             </div>
+            {% endfor %}
         </div>
     </div>
 {% endblock content %}
