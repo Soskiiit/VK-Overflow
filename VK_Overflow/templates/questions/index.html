@@ -9,7 +9,7 @@
         <a style="font-size: 1rem; text-decoration: none; color: dimgrey;" href="{% url 'hot_questions' %}">Наиболее интересные</a>
     </h3>
     <div class="container flex-column">
-    {% for question in questions %}
+    {% for question in page_obj %}
         <div class="question-card">
             <h3><a style="text-decoration: none; color: black" href="{% url 'view_question' question_id=question.qid %}">{{ question.title }}</a></h3>
             <a>{{ question.description }}</a>
@@ -23,14 +23,7 @@
         </div>
     {% endfor %}
     </div>
-    <ul class="pagination">
-        <li><a href="#"><img src="{% static 'assets/arrow-left.svg' %}"></a></li>
-        <li class="active-page"><a href="#">1</a></li>
-        <li><a href="#">2</a></li>
-        <li><a href="#">3</a></li>
-        <li><a href="#">4</a></li>
-        <li><a href="#">5</a></li>
-        <li><a href="#"><img src="{% static 'assets/arrow-right.svg' %}"></a></li>
-    </ul>
+
+    {% include 'core/pagination.html' %}
 
 {% endblock content %}

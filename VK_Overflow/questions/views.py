@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from django.core.paginator import Paginator
 from django.shortcuts import render
 
 
@@ -11,7 +12,7 @@ questions = [
         'description': 'some bla-bla-bla',
         'rating': hash(str(i)) % 23,  # pseudorandom positive number [0; 22]
         'tags': ['python', 'django'] if hash(str(i)) % 2 else ['golang', 'gRPC'],
-    } for i in range(99)
+    } for i in range(999999)
 ]
 
 # Let's get tags sorted by popularity descending
@@ -30,40 +31,55 @@ answers = [
     } for i in range(99)
 ]
 
+items_on_page = 10
+
 
 def index(request):
+    paginator = Paginator(questions, items_on_page)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         'questions/index.html',
-        {'questions': questions}
+        {'page_obj': page_obj}
     )
 
 
 def view_tag(request, tag):
+    paginator = Paginator(list(filter(lambda x: tag in x['tags'], questions)), items_on_page)
+    page_obj = paginator.get_page(request.GET.get("page"))
     return render(
         request,
         'questions/index.html',
         {
-            'questions': filter(lambda x: tag in x['tags'], questions),
+            'page_obj': page_obj,
             'page_title': f'Tag {tag}'
         }
     )
 
 
 def my_questions(request):
-    return render(
-        request,
-        'questions/questions-list.html',
-        {'questions': questions, 'page_title': 'Мои вопросы'},
-    )
-
-
-def hot_questions(request):
+    paginator = Paginator(list(filter(lambda x: tag in x['tags'], questions)), items_on_page)
+    page_obj = paginator.get_page(request.GET.get("page"))
     return render(
         request,
         'questions/questions-list.html',
         {
-            'questions': sorted(questions, key=lambda x: -x['rating']),
+            'page_obj': page_obj,
+            'page_title': 'Мои вопросы'
+        },
+    )
+
+
+def hot_questions(request):
+    paginator = Paginator(list(sorted(questions, key=lambda x: -x['rating'])), items_on_page)
+    page_obj = paginator.get_page(request.GET.get("page"))
+    return render(
+        request,
+        'questions/questions-list.html',
+        {
+            'page_obj': page_obj,
             'page_title': 'Интереснейшие!! вопросы'
         }
     )

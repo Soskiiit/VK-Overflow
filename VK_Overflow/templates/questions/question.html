@@ -12,7 +12,11 @@
 
         <div class="flex-row">
             {% for tag in question.tags %}
-            <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">{{ tag }}</span>
+            <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">
+                <a href="{% url 'view_tag' tag=tag %}" style="text-decoration: none; color:inherit">
+                    {{ tag }}
+                </a>
+            </span>
             {% endfor %}
         </div>
 
