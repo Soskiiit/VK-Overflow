@@ -1,7 +1,8 @@
 from collections import defaultdict
 
-from django.core.paginator import Paginator
 from django.shortcuts import render
+
+from core.utils import paginate
 
 
 questions = [
@@ -31,13 +32,9 @@ answers = [
     } for i in range(99)
 ]
 
-items_on_page = 10
-
 
 def index(request):
-    paginator = Paginator(questions, items_on_page)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginate(questions, request)
 
     return render(
         request,
@@ -47,8 +44,9 @@ def index(request):
 
 
 def view_tag(request, tag):
-    paginator = Paginator(list(filter(lambda x: tag in x['tags'], questions)), items_on_page)
-    page_obj = paginator.get_page(request.GET.get("page"))
+    data = list(filter(lambda x: tag in x['tags'], questions))
+
+    page_obj = paginate(data, request)
     return render(
         request,
         'questions/index.html',
@@ -60,8 +58,9 @@ def view_tag(request, tag):
 
 
 def my_questions(request):
-    paginator = Paginator(list(filter(lambda x: tag in x['tags'], questions)), items_on_page)
-    page_obj = paginator.get_page(request.GET.get("page"))
+    data = list(filter(lambda x: tag in x['tags'], questions))
+
+    page_obj = paginate(data, request)
     return render(
         request,
         'questions/questions-list.html',
@@ -73,8 +72,9 @@ def my_questions(request):
 
 
 def hot_questions(request):
-    paginator = Paginator(list(sorted(questions, key=lambda x: -x['rating'])), items_on_page)
-    page_obj = paginator.get_page(request.GET.get("page"))
+    data = list(sorted(questions, key=lambda x: -x['rating']))
+
+    page_obj = paginate(data, request)
     return render(
         request,
         'questions/questions-list.html',

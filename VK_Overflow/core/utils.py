@@ -1,0 +1,17 @@
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
+
+def paginate(objects_list, request, per_page=10):
+    paginator = Paginator(objects_list, per_page)
+    page_number = request.GET.get('page')
+
+    # Если провалиться в код Paginator.get_page, то там описано примерно то же самое)
+    # Изобреатем велосипед:
+    try:
+        page = paginator.page(page_number)
+    except PageNotAnInteger:
+        page = paginator.page(1)
+    except EmptyPage:
+        page = paginator.page(paginator.num_pages)
+
+    return page

@@ -23,7 +23,7 @@ class LoginForm(forms.Form):
 
 class RegistrationForm(forms.ModelForm):
     username = forms.CharField(widget=forms.TextInput(
-            attrs={'class': 'iconned-input-field', 'placeholder': 'Имя пользователя'}
+        attrs={'class': 'iconned-input-field', 'placeholder': 'Имя пользователя'}
     ))
     email = forms.EmailField(widget=forms.EmailInput(
         attrs={'class': 'iconned-input-field', 'placeholder': 'E-mail'}
