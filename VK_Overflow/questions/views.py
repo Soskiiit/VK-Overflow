@@ -1,8 +1,12 @@
 from collections import defaultdict
 
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
+from django.shortcuts import get_object_or_404, render
 
 from core.utils import paginate
+from questions.models import Answer, Question, Tag
 
 
 questions = [
@@ -34,6 +38,7 @@ answers = [
 
 
 def index(request):
+    questions = Question.objects.all().order_by('-id')
     page_obj = paginate(questions, request)
 
     return render(
@@ -43,10 +48,11 @@ def index(request):
     )
 
 
-def view_tag(request, tag):
-    data = list(filter(lambda x: tag in x['tags'], questions))
+def view_tag(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    question_list = Question.objects.filter(tags=tag).order_by('-creation_date')
+    page_obj = paginate(question_list, request)
 
-    page_obj = paginate(data, request)
     return render(
         request,
         'questions/index.html',
@@ -57,10 +63,11 @@ def view_tag(request, tag):
     )
 
 
+@login_required
 def my_questions(request):
-    data = list(filter(lambda x: tag in x['tags'], questions))
+    question_list = Question.objects.filter(author=request.user).order_by('-creation_date')
+    page_obj = paginate(question_list, request)
 
-    page_obj = paginate(data, request)
     return render(
         request,
         'questions/questions-list.html',
@@ -72,9 +79,12 @@ def my_questions(request):
 
 
 def hot_questions(request):
-    data = list(sorted(questions, key=lambda x: -x['rating']))
+    # Т.к. @property использовать для сортировки джанга не даст, то придётся поступать так
+    question_list = Question.objects.annotate(
+        rating_sort=Coalesce(Sum('questiongrade__grade'), 0)
+    ).order_by('-rating_sort')
 
-    page_obj = paginate(data, request)
+    page_obj = paginate(question_list, request)
     return render(
         request,
         'questions/questions-list.html',
@@ -90,11 +100,13 @@ def new_question(request):
 
 
 def view_question(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+
     return render(
         request,
         'questions/question.html',
         {
-            'question': questions[question_id],
-            'answers': filter(lambda x: x['qid'] == question_id, answers)
+            'question': question,
+            'answers': Answer.objects.filter(question=question_id).order_by('-answer_date'),
         }
     )
