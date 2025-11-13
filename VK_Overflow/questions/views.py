@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
@@ -7,34 +5,6 @@ from django.shortcuts import get_object_or_404, render
 
 from core.utils import paginate
 from questions.models import Answer, Question, Tag
-
-
-questions = [
-    {
-        'qid': i,
-        'author_id': i * 2,
-        'title': f'Title {i + 1}',
-        'description': 'some bla-bla-bla',
-        'rating': hash(str(i)) % 23,  # pseudorandom positive number [0; 22]
-        'tags': ['python', 'django'] if hash(str(i)) % 2 else ['golang', 'gRPC'],
-    } for i in range(999999)
-]
-
-# Let's get tags sorted by popularity descending
-tags = defaultdict(int)
-for question in questions:
-    for tag in question['tags']:
-        tags[tag] += 1
-tags = list(map(lambda x: x[0], sorted(tags.items(), key=lambda x: x[1], reverse=True)))
-
-answers = [
-    {
-        'uid': i // 4,  # ~4 comms from 1 user
-        'qid': hash(str(i)) % 99,
-        'answer_rating': i,
-        'text': 'bla-bla-bla',
-    } for i in range(99)
-]
 
 
 def index(request):
@@ -100,13 +70,15 @@ def new_question(request):
 
 
 def view_question(request, question_id):
-    question = get_object_or_404(Question, id=question_id)
+    question = get_object_or_404(Question.objects.select_related('author'), id=question_id)
+    answers = (Answer.objects.filter(question=question_id)
+               .select_related('author').order_by('-answer_date'))
 
     return render(
         request,
         'questions/question.html',
         {
             'question': question,
-            'answers': Answer.objects.filter(question=question_id).order_by('-answer_date'),
+            'answers': answers,
         }
     )

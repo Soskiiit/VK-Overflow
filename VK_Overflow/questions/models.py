@@ -11,7 +11,7 @@ class Tag(models.Model):
         ('cyan', 'cyan'),
     )
 
-    name = models.CharField(max_length=32, verbose_name='Название тега')
+    name = models.CharField(max_length=32, unique=True, verbose_name='Название тега')
     color = models.CharField(
         max_length=32,
         choices=COLOR_CHOICES,
@@ -39,6 +39,8 @@ class Question(models.Model):
 
     @property
     def rating(self):
+        if hasattr(self, 'rating_sort'):
+            return self.rating_sort
         result = self.questiongrade_set.aggregate(models.Sum('grade'))
         return result['grade__sum'] or 0
 

@@ -8,7 +8,7 @@
 {% block content %}
     <div class="question-card">
         <h3>{{ question.title }}</h3>
-        <p>{{ question.description }}</p>
+        <p>{{ question.question_text }}</p>
 
         <div class="flex-row">
             {% for tag in question.tags.all %}
@@ -22,7 +22,7 @@
 
         <div class="author-card">
             <img src="{% static 'assets/default-avatar.png' %}">
-            <a>User {{ question.author_id }}</a>
+            <a>{{ question.author }}</a>
         </div>
 
         <br>
