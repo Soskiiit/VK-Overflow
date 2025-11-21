@@ -4,6 +4,7 @@ from random import choice, randint
 from django.core.management.base import BaseCommand
 
 from questions.models import Answer, Question, QuestionGrade, Tag
+from questions.utils import recalculate_answer_ratings, recalculate_question_ratings
 from users.models import User
 
 
@@ -113,4 +114,15 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(
             f'All data was created successfully in {datetime.now() - total_start}'
+        ))
+
+        self.stdout.write(self.style.NOTICE(
+            'Calculating ratings for Questions and Answers'
+        ))
+
+        start = datetime.now()
+        recalculate_question_ratings()
+        recalculate_answer_ratings()
+        self.stdout.write(self.style.SUCCESS(
+            f'Calculated in {datetime.now() - start}'
         ))

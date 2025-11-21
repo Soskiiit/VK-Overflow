@@ -1,6 +1,4 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
-from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, render
 
 from core.utils import paginate
@@ -8,7 +6,7 @@ from questions.models import Answer, Question, Tag
 
 
 def index(request):
-    questions = Question.objects.all().order_by('-id')
+    questions = Question.objects.order_by('-id')
     page_obj = paginate(questions, request)
 
     return render(
@@ -49,10 +47,7 @@ def my_questions(request):
 
 
 def hot_questions(request):
-    # Т.к. @property использовать для сортировки джанга не даст, то придётся поступать так
-    question_list = Question.objects.annotate(
-        rating_sort=Coalesce(Sum('questiongrade__grade'), 0)
-    ).order_by('-rating_sort')
+    question_list = Question.objects.order_by('-rating')
 
     page_obj = paginate(question_list, request)
     return render(

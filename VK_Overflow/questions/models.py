@@ -36,13 +36,15 @@ class Question(models.Model):
     question_text = models.TextField(blank=True, verbose_name='Детали вопроса')
     tags = models.ManyToManyField(Tag, blank=True, null=True, verbose_name='Теги')
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    # индексируем в дб во имя страницы hot
+    rating = models.IntegerField(default=0, db_index=True, verbose_name='Рейтинг')
 
-    @property
-    def rating(self):
-        if hasattr(self, 'rating_sort'):
-            return self.rating_sort
-        result = self.questiongrade_set.aggregate(models.Sum('grade'))
-        return result['grade__sum'] or 0
+    # @property
+    # def rating(self):
+    #     if hasattr(self, 'question_rating'):
+    #         return self.question_rating
+    #     result = self.questiongrade_set.aggregate(models.Sum('grade'))
+    #     return result['grade__sum'] or 0
 
     def __str__(self):
         return self.title
@@ -59,11 +61,7 @@ class Answer(models.Model):
     )
     answer_text = models.TextField(verbose_name='Содержание ответа')
     answer_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата ответа')
-
-    @property
-    def rating(self):
-        result = self.answergrade_set.aggregate(models.Sum('grade'))
-        return result['grade__sum'] or 0
+    rating = models.IntegerField(default=0, verbose_name='Рейтинг')
 
     def __str__(self):
         return f'Ответ на "{self.question.title}" от {self.author.username}'
