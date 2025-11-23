@@ -16,10 +16,23 @@
 <div class="container p-3" style="border-radius: 1em; border: solid darkgray 1px; margin-top: 1rem;">
     <p class="fs-4">Активные пользователи</p>
     <div class="d-flex flex-column col-12 gap-1 p-1 justify-content-start fs-6">
-        <a style="color: orangered">Hindu</a>
-        <a style="color: darkslategray">Mr. Freeman</a>
-        <a style="color: darkslategray">Code master</a>
-        <a style="color: dimgrey">Linus Torvalds</a>
-        <a style="color: dimgrey">Just a moder</a>
+        {% if most_active_users|length == 0 %}
+        <a style="color: darkslategray">Никто не активничает...</a>
+        {% endif %}
+        {% if most_active_users|length > 0 %}
+        <a style="color: orangered">{{ most_active_users.0.username }}</a>
+        {% endif %}
+        {% if most_active_users|length > 1 %}
+        <a style="color: darkslategray">{{ most_active_users.1.username }}</a>
+        {% endif %}
+        {% if most_active_users|length > 2 %}
+        <a style="color: darkslategray">{{ most_active_users.2.username }}</a>
+        {% endif %}
+        {% if most_active_users|length > 3 %}
+        <a style="color: dimgrey">{{ most_active_users.3.username }}</a>
+        {% endif %}
+        {% if most_active_users|length > 4 %}
+        <a style="color: dimgrey">{{ most_active_users.4.username }}</a>
+        {% endif %}
     </div>
 </div>

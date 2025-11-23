@@ -30,5 +30,5 @@ services:
     image: memcached:1.6.39
     restart: unless-stopped
     ports:
-      - ${MEMCACHED_PORT}:11211
+      - ${MEMCACHED_PORT:-11211}:11211
     command: memcached -m 256

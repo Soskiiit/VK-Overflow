@@ -31,20 +31,13 @@ class Question(models.Model):
     title = models.CharField(max_length=120, verbose_name='Заголовок')
     author = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.SET_NULL,
-        verbose_name='Задан пользователем'
+        related_name='questions', verbose_name='Задан пользователем'
     )
     question_text = models.TextField(blank=True, verbose_name='Детали вопроса')
     tags = models.ManyToManyField(Tag, blank=True, null=True, verbose_name='Теги')
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     # индексируем в дб во имя страницы hot
     rating = models.IntegerField(default=0, db_index=True, verbose_name='Рейтинг')
-
-    # @property
-    # def rating(self):
-    #     if hasattr(self, 'question_rating'):
-    #         return self.question_rating
-    #     result = self.questiongrade_set.aggregate(models.Sum('grade'))
-    #     return result['grade__sum'] or 0
 
     def __str__(self):
         return self.title
@@ -55,16 +48,17 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='Вопрос')
-    author = models.ForeignKey(
-        User, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Автор'
-    )
+    question = models.ForeignKey(Question, on_delete=models.CASCADE,
+                                 related_name='answers', verbose_name='Вопрос')
+    author = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL,
+                               related_name='answers', verbose_name='Автор')
     answer_text = models.TextField(verbose_name='Содержание ответа')
     answer_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата ответа')
     rating = models.IntegerField(default=0, verbose_name='Рейтинг')
 
     def __str__(self):
-        return f'Ответ на "{self.question.title}" от {self.author.username}'
+        return (f'Ответ на "{self.question.title}" '
+                f'от {self.author.username if self.author else 'Аноним'}')
 
     class Meta:
         verbose_name = 'Ответ'
@@ -78,7 +72,8 @@ class QuestionGrade(models.Model):
 
     def __str__(self):
         return (f'{'+1' if self.grade else '-1'} '
-                f'для "{self.question.title}" от {self.author.username}')
+                f'для "{self.question.title}"'
+                f' от {self.author.username if self.author else 'Анонима'}')
 
     class Meta:
         unique_together = ('author', 'question')
@@ -94,7 +89,8 @@ class AnswerGrade(models.Model):
 
     def __str__(self):
         return (f'{'+1' if self.grade else '-1'} для ответа'
-                f' на "{self.answer.title}" от {self.author.username}')
+                f' на "{self.answer.title}"'
+                f' от {self.author.username if self.author else 'Анонима'}')
 
     class Meta:
         unique_together = ('author', 'answer')
