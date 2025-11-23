@@ -38,13 +38,25 @@
                                     <p>{{ message }}</p>
                                 </div>
                             {% endif %}
-                            <a class="forget-btn" href="{% url 'reset_password' %}">Забыли пароль?</a>
+                            <button type="button" class="forget-btn" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content="Очень-очень жаль :(">
+                              Забыли пароль?
+                            </button>
                         </div>
-                        <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg btn-block me-3 ps-4 pe-4" type="submit">Войти</button>
-                        <a href="{% url 'signup' %}" class="btn btn-light btn-lg btn-block border border-1 border-dark-subtle"  >Зарегистрироваться</a>
+                        <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg btn-block mb-3 ps-4 pe-4 w-100" type="submit">Войти</button>
+                        <a style="text-decoration: none;" href="{% url 'signup' %}"><span style="color: slategrey">Ещё нет аккаунта?</span> Зарегистрироваться</a>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 {% endblock content %}
+
+{% block scripts %}
+    <script>
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl)
+    })
+    </script>
+    <script type="text/javascript" src="{% static "js/popper.min.js" %}"></script>
+{% endblock scripts %}
