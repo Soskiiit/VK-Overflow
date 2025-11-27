@@ -7,9 +7,9 @@ from .models import User
 
 class ExtendedUserAdmin(UserAdmin):
     fieldsets = (
-        (None, {'fields': ('username', 'password')}),
+        (None, {'fields': ('username', 'avatar', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name',
-                                         'email')}),
+                                         'email', 'telegram', 'github')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups',
                        'user_permissions'),

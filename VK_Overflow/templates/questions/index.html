@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block tab_title %}VK Overflow{% endblock tab_title %}
+
+{% block content %}
+    <h3 style="margin-bottom: 1.8rem;">
+        <a style="text-decoration: none; color: black;" href="{% url 'homepage' %}">Новые вопросы</a>
+        <a style="font-size: 1rem; text-decoration: none; color: dimgrey;" href="{% url 'hot_questions' %}">Наиболее интересные</a>
+    </h3>
+    <div class="container flex-column">
+    {% for question in page_obj %}
+        <div class="question-card">
+            <h3><a style="text-decoration: none; color: black" href="{% url 'view_question' question_id=question.id %}">{{ question.title|truncatechars:80 }}</a></h3>
+            <a>{{ question.question_text|truncatechars:120 }}</a>
+
+            <br><br>
+            <div class="rating-block flex-row">
+                <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');">
+                <a>{{ question.rating }}</a>
+                <img src="{% static "assets/arrow-down.svg" %}" onclick="alert('При клике мог бы уменьшиться рейтинг поста, но реализация того мне ещё и не снилась!');">
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+    {% include 'core/pagination.html' %}
+
+{% endblock content %}

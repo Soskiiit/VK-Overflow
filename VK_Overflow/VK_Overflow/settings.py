@@ -1,6 +1,7 @@
 from os import getenv
 from pathlib import Path
 
+from django.conf import settings
 from dotenv import load_dotenv
 
 
@@ -11,6 +12,11 @@ SECRET_KEY = getenv('DJANGO_SECRET_KEY')
 
 DEBUG = getenv('DJANGO_DEBUG', '0').lower() in ('1', 'true', 't', 'y', 'yes')
 ALLOWED_HOSTS = list(getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(','))
+INTERNAL_IPS = list(getenv('DJANGO_INTERNAL_IPS', '127.0.0.1,localhost').split(','))
+
+MEMCACHED_HOST = getenv("MEMCACHED_HOST", "localhost")
+MEMCACHED_PORT = getenv("MEMCACHED_PORT", "11211")
+
 
 if DEBUG:
     ALLOWED_HOSTS = ['*']
@@ -25,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Project apps
+    'core.apps.CoreConfig',
     'questions.apps.QuestionsConfig',
     'users.apps.UsersConfig',
 ]
@@ -39,22 +46,27 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 3rd party middlewares
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
 ]
+
+if settings.DEBUG:
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+
 
 ROOT_URLCONF = 'VK_Overflow.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'questions.context_processors.get_popular_tags',
+                'questions.context_processors.get_most_active_users',
             ],
         },
     },
@@ -70,6 +82,13 @@ DATABASES = {
         'PASSWORD': getenv('POSTGRES_PASSWORD'),
         'HOST': getenv('POSTGRES_HOST', 'localhost'),
         'PORT': getenv('POSTGRES_PORT', '5432'),
+    }
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+        'LOCATION': f'{MEMCACHED_HOST}:{MEMCACHED_PORT}',  # noqa: E231
     }
 }
 
@@ -103,5 +122,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static_dev",
+]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

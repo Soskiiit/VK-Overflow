@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{% static "assets/favicon.svg" %}"/>
+    <title>{% block tab_title %}Page Title{% endblock %}</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "css/theme.css" %}">
+    {% block styles %}{% endblock %}
+</head>
+<body>
+
+<header class="p-3 mb-5 border-bottom">
+    <a href="{% url "homepage" %}" class="nav-link px-2 fs-5 link-secondary" style="margin-left: 8%;">VK Overflow</a>
+</header>
+
+
+<div class="container">
+    <div class="container col-md-9" id="left-block">
+        {% block content %}Welcome here \(^-^)/{% endblock %}
+    </div>
+</div>
+<br>
+
+<script type="text/javascript" src="{% static "js/bootstrap/bootstrap.bundle.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/jquery/jquery-3.6.4.min.js" %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

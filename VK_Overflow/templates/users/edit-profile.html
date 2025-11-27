@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block tab_title %}
+    Мой профиль
+{% endblock tab_title %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-end gap-3">
+            <div class="col col-3 align-content-center align-items-center text-center p-4 border border-dark-subtle rounded-4">
+                <p class="fs-5 mb-5">Изменить изображение</p>
+                <img class="w-75 mb-5" src="{% static 'assets/default-avatar.png' %}">
+                <div class="d-grid gap-2 mt-5">
+                    <button type="button" class="btn btn-outline-primary">Загрузить</button>
+                    <button type="button" class="btn btn-outline-danger">Удалить</button>
+                </div>
+            </div>
+            <div class="col-8 p-4 border border-dark-subtle rounded-4">
+                <div class="edit-profile-container">
+                    <div>
+                        <p>Username</p>
+                        <input class="form-control" type="text" name="username" placeholder="Введите отображаемое имя" value="{{ user.username }}">
+                    </div>
+                    <div>
+                        <p>E-mail</p>
+                        <input class="form-control" type="email" name="email" placeholder="your-email@could-be.here" value="{{ user.email }}">
+                    </div>
+                    <div>
+                        <p>GitHub</p>
+                        <input class="form-control" type="text" name="github" placeholder="github.com/<your_profile>" value="{{ user.github }}">
+                    </div>
+
+                    <div>
+                        <p>Telegram</p>
+                        <input class="form-control" type="text" name="telegram" placeholder="t.me/coolest_user" value="{{ user.telegram }}">
+                    </div>
+
+                    <button type="button" class="btn btn-outline-primary mt-5">Сохранить изменения</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
