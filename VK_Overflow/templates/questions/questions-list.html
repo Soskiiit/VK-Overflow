@@ -4,12 +4,9 @@
 {% block tab_title %}VK Overflow{% endblock tab_title %}
 
 {% block content %}
-    <h3 style="margin-bottom: 1.8rem;">
-        <a style="text-decoration: none; color: black;" href="{% url 'homepage' %}">Новые вопросы</a>
-        <a style="font-size: 1rem; text-decoration: none; color: dimgrey;" href="{% url 'hot_questions' %}">Наиболее интересные</a>
-    </h3>
+    <h3 style="margin-bottom: 1.8rem;">{{ page_title }}</h3>
     <div class="container flex-column">
-    {% for question in page_obj %}
+        {% for question in page_obj %}
         <div class="question-card">
             <h3><a style="text-decoration: none; color: black" href="{% url 'view_question' question_id=question.id %}">{{ question.title|truncatechars:80 }}</a></h3>
             <a>{{ question.question_text|truncatechars:120 }}</a>

@@ -66,12 +66,11 @@ footer {
     display: flex;
     justify-content: left;
     list-style: none;
-    padding: 0;
+    padding: 0 0 0 .5rem;
     margin: 0 -1rem;
 }
 
 .pagination > li {
-    aspect-ratio: 1;
     border-radius: .25rem;
     margin: 0.1rem;
 }
@@ -85,6 +84,7 @@ footer {
     display: block;
     padding: 8px 12px;
     text-decoration: none;
+    text-align: center;
     border: none;
     color: black;
     margin: 0;
@@ -134,6 +134,8 @@ footer {
     color: #555;
     text-decoration: none;
     transition: color .5s;
+    border: none;
+    background-color: transparent;
 }
 
 .forget-btn:hover {
@@ -150,7 +152,7 @@ footer {
 }
 
 .author-card {
-    margin: 3rem 0 0 .5rem;
+    margin: 2rem 0 0 .5rem;
 }
 
 .author-card > img {
