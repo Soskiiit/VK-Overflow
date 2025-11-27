@@ -8,12 +8,12 @@
 {% block content %}
     <div class="question-card">
         <h3>{{ question.title }}</h3>
-        <p>{{ question.description }}</p>
+        <p>{{ question.question_text }}</p>
 
         <div class="flex-row">
-            {% for tag in question.tags %}
+            {% for tag in question.tags.all %}
             <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">
-                <a href="{% url 'view_tag' tag=tag %}" style="text-decoration: none; color:inherit">
+                <a href="{% url 'view_tag' tag_name=tag.name %}" style="text-decoration: none; color:inherit">
                     {{ tag }}
                 </a>
             </span>
@@ -22,7 +22,7 @@
 
         <div class="author-card">
             <img src="{% static 'assets/default-avatar.png' %}">
-            <a>User {{ question.author_id }}</a>
+            <a>{{ question.author }}</a>
         </div>
 
         <br>
@@ -43,13 +43,13 @@
             <div class="answer-card">
                 <div class="answer-author-card">
                     <img src="{% static 'assets/default-avatar.png' %}">
-                    <a class="fs-5">User {{ ans.uid }}</a>
+                    <a class="fs-5">{{ ans.author }}</a>
                 </div>
-                <p class="col-11">{{ ans.text }}</p>
+                <p class="col-11">{{ ans.answer_text }}</p>
 
                 <div class="rating-block flex-row" style="margin-right: 1rem; float: right;">
                     <img src="{% static "assets/arrow-up.svg" %}" onclick="alert('При клике мог бы увеличиться рейтинг поста, но реализация того мне ещё и не снилась!');">
-                    <a>{{ ans.answer_rating }}</a>
+                    <a>{{ ans.rating }}</a>
                     <img src="{% static "assets/arrow-down.svg" %}" onclick="alert('При клике мог бы уменьшиться рейтинг поста, но реализация того мне ещё и не снилась!');">
                 </div>
             </div>

@@ -59,4 +59,11 @@
       - ```shell
         ./manage.py runserver
         ```
+### How to create test data
+Run command
+```shell
+  ./manage.py fill_db <ratio>
+```
+ratio adjusts count of records in DB
+
 ### Documentation for production could be here ^_^

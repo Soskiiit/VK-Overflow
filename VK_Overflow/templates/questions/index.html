@@ -11,8 +11,8 @@
     <div class="container flex-column">
     {% for question in page_obj %}
         <div class="question-card">
-            <h3><a style="text-decoration: none; color: black" href="{% url 'view_question' question_id=question.qid %}">{{ question.title }}</a></h3>
-            <a>{{ question.description }}</a>
+            <h3><a style="text-decoration: none; color: black" href="{% url 'view_question' question_id=question.id %}">{{ question.title|truncatechars:80 }}</a></h3>
+            <a>{{ question.question_text|truncatechars:120 }}</a>
 
             <br><br>
             <div class="rating-block flex-row">

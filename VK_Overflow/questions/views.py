@@ -1,39 +1,12 @@
-from collections import defaultdict
-
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render
 
 from core.utils import paginate
-
-
-questions = [
-    {
-        'qid': i,
-        'author_id': i * 2,
-        'title': f'Title {i + 1}',
-        'description': 'some bla-bla-bla',
-        'rating': hash(str(i)) % 23,  # pseudorandom positive number [0; 22]
-        'tags': ['python', 'django'] if hash(str(i)) % 2 else ['golang', 'gRPC'],
-    } for i in range(999999)
-]
-
-# Let's get tags sorted by popularity descending
-tags = defaultdict(int)
-for question in questions:
-    for tag in question['tags']:
-        tags[tag] += 1
-tags = list(map(lambda x: x[0], sorted(tags.items(), key=lambda x: x[1], reverse=True)))
-
-answers = [
-    {
-        'uid': i // 4,  # ~4 comms from 1 user
-        'qid': hash(str(i)) % 99,
-        'answer_rating': i,
-        'text': 'bla-bla-bla',
-    } for i in range(99)
-]
+from questions.models import Answer, Question, Tag
 
 
 def index(request):
+    questions = Question.objects.order_by('-id')
     page_obj = paginate(questions, request)
 
     return render(
@@ -43,10 +16,11 @@ def index(request):
     )
 
 
-def view_tag(request, tag):
-    data = list(filter(lambda x: tag in x['tags'], questions))
+def view_tag(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    question_list = Question.objects.filter(tags=tag).order_by('-creation_date')
+    page_obj = paginate(question_list, request)
 
-    page_obj = paginate(data, request)
     return render(
         request,
         'questions/index.html',
@@ -57,10 +31,11 @@ def view_tag(request, tag):
     )
 
 
+@login_required
 def my_questions(request):
-    data = list(filter(lambda x: tag in x['tags'], questions))
+    question_list = Question.objects.filter(author=request.user).order_by('-creation_date')
+    page_obj = paginate(question_list, request)
 
-    page_obj = paginate(data, request)
     return render(
         request,
         'questions/questions-list.html',
@@ -72,9 +47,9 @@ def my_questions(request):
 
 
 def hot_questions(request):
-    data = list(sorted(questions, key=lambda x: -x['rating']))
+    question_list = Question.objects.order_by('-rating')
 
-    page_obj = paginate(data, request)
+    page_obj = paginate(question_list, request)
     return render(
         request,
         'questions/questions-list.html',
@@ -90,11 +65,15 @@ def new_question(request):
 
 
 def view_question(request, question_id):
+    question = get_object_or_404(Question.objects.select_related('author'), id=question_id)
+    answers = (Answer.objects.filter(question=question_id)
+               .select_related('author').order_by('-answer_date'))
+
     return render(
         request,
         'questions/question.html',
         {
-            'question': questions[question_id],
-            'answers': filter(lambda x: x['qid'] == question_id, answers)
+            'question': question,
+            'answers': answers,
         }
     )
