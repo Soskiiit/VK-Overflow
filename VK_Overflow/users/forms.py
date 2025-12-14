@@ -1,3 +1,5 @@
+from re import match
+
 from django import forms
 from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
@@ -96,15 +98,58 @@ class RegistrationForm(forms.ModelForm):
 
 
 class EditProfileForm(forms.ModelForm):
+    avatar = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'd-none'}))
+    username = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'placeholder': 'Введите отображаемое имя'}
+    ))
+    email = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'placeholder': 'your-email@could-be.here'}
+    ), required=False)
+    telegram = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'placeholder': 't.me/coolest_user'}
+    ), required=False)
+    github = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'placeholder': 'github.com/<your_profile>'}
+    ), required=False)
+
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'username')
+        fields = ('avatar', 'username', 'email', 'telegram', 'github')
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance and self.instance.pk:
-            self.fields['username'].disabled = True
-            self.fields['username'].help_text = "Имя пользователя изменить нельзя."
-    # Надо бы начать писать формы, прикручивать их сразу к страничкам, реализоавть всё сразу
-    # Но дедлайн через 2 дня кричит: КОПИ ТЕХДОЛГ!
-    # TODO
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if self.data.get('avatar-clear'):
+            user.avatar = None
+        if commit:
+            user.save()
+        return user
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email').strip()
+        if User.objects.filter(email=email).exists():
+            if User.objects.get(email=email).id != self.instance.id:
+                raise ValidationError(
+                    'Пользователь с таким email уже зарегистрирован.',
+                    code='email_exists'
+                )
+        return email
+
+    def clean_github(self):
+        github = self.cleaned_data.get('github').strip()
+        if github:
+            if not match(r'^((http|https)://)?github\.com/', github):
+                raise ValidationError(
+                    'Ссылка на github не является валидной',
+                    code='github_invalid'
+                )
+        return github
+
+    def clean_telegram(self):
+        tg = self.cleaned_data.get('telegram').strip()
+        if tg:
+            if not match(r'^((http|https)://)?t\.me', tg) and tg[0] != '@':
+                raise ValidationError(
+                    'Telegram не является валидным',
+                    code='tg_invalid'
+                )
+        return tg

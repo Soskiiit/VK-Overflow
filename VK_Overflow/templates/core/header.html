@@ -1,4 +1,6 @@
 {% load static %}
+{% load thumbnail %}
+
 <header class="p-3 border-bottom" style="margin-bottom: 2.5rem;">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-between justify-content-lg-between">
@@ -11,7 +13,15 @@
                 <a href="#"
                    class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
                    data-bs-toggle="dropdown" aria-expanded="false"> <img
-                        src="{% static "assets/default-avatar.png" %}" alt="mdo" width="40" height="40"
+                        src="
+                        {% if request.user.avatar %}
+                        {% thumbnail request.user.avatar '128x128' crop='center' as im %}
+                           {{ im.url }}
+                        {% endthumbnail %}
+                        {% else %}
+                            {% static "assets/default-avatar.png" %}
+                        {% endif %}
+                        " alt="mdo" width="40" height="40"
                         class="rounded-circle"> </a>
                 <ul class="dropdown-menu text-small">
                     <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Профиль</a></li>

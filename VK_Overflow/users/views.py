@@ -43,5 +43,9 @@ def reset_password(request):
 
 @login_required
 def edit_profile(request):
-    form = EditProfileForm(request.POST, instance=request.user)
+    form = EditProfileForm(instance=request.user)
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
     return render(request, 'users/edit-profile.html', context={'form': form})

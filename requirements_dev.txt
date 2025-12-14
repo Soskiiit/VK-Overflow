@@ -24,5 +24,6 @@ python-dotenv==1.1.1
 PyYAML==6.0.3
 setuptools==80.9.0
 shortuuid==1.0.13
+sorl-thumbnail==12.11.0
 sqlparse==0.5.3
 virtualenv==20.35.3

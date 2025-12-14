@@ -1,6 +1,7 @@
 from django.db import models
 
 from users.models import User
+from .managers import AnswerQuerySet, QuestionQuerySet
 
 
 class Tag(models.Model):
@@ -28,19 +29,21 @@ class Tag(models.Model):
 
 
 class Question(models.Model):
+    objects = QuestionQuerySet.as_manager()  # гптшка с gemini'кой сказали, что эт best practices
+
     title = models.CharField(max_length=120, verbose_name='Заголовок')
     author = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.SET_NULL,
         related_name='questions', verbose_name='Задан пользователем'
     )
     question_text = models.TextField(blank=True, verbose_name='Детали вопроса')
-    tags = models.ManyToManyField(Tag, blank=True, null=True, verbose_name='Теги')
+    tags = models.ManyToManyField(Tag, verbose_name='Теги')
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     # индексируем в дб во имя страницы hot
     rating = models.IntegerField(default=0, db_index=True, verbose_name='Рейтинг')
 
     def __str__(self):
-        return self.title
+        return f'Вопрос #{self.id}'
 
     class Meta:
         verbose_name = 'Вопрос'
@@ -48,6 +51,8 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
+    objects = AnswerQuerySet.as_manager()  # гптшка с gemini'кой сказали, что эт best practices
+
     question = models.ForeignKey(Question, on_delete=models.CASCADE,
                                  related_name='answers', verbose_name='Вопрос')
     author = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL,
@@ -57,8 +62,8 @@ class Answer(models.Model):
     rating = models.IntegerField(default=0, verbose_name='Рейтинг')
 
     def __str__(self):
-        return (f'Ответ на "{self.question.title}" '
-                f'от {self.author.username if self.author else 'Аноним'}')
+        return (f'Ответ на #{self.question_id} '
+                f'от #{self.author_id if self.author_id else 'Аноним'}')
 
     class Meta:
         verbose_name = 'Ответ'
@@ -66,14 +71,19 @@ class Answer(models.Model):
 
 
 class QuestionGrade(models.Model):
+    CHOICES = (
+        (-1, 'Dislike'),
+        (1, 'Like')
+    )
+
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, verbose_name='Автор')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='Вопрос')
-    grade = models.SmallIntegerField(choices=((-1, '-1'), (1, '1')), verbose_name='Оценка')
+    grade = models.SmallIntegerField(choices=CHOICES, verbose_name='Оценка', default=0)
 
     def __str__(self):
         return (f'{'+1' if self.grade else '-1'} '
-                f'для "{self.question.title}"'
-                f' от {self.author.username if self.author else 'Анонима'}')
+                f'для #{self.question_id}'
+                f' от #{self.author_id if self.author_id else 'Анонима'}')
 
     class Meta:
         unique_together = ('author', 'question')
@@ -83,14 +93,19 @@ class QuestionGrade(models.Model):
 
 
 class AnswerGrade(models.Model):
+    CHOICES = (
+        (-1, 'Dislike'),
+        (1, 'Like')
+    )
+
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, verbose_name='Автор')
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, verbose_name='Ответ')
-    grade = models.SmallIntegerField(choices=((-1, '-1'), (1, '1')), verbose_name='Оценка')
+    grade = models.SmallIntegerField(choices=CHOICES, verbose_name='Оценка', default=0)
 
     def __str__(self):
-        return (f'{'+1' if self.grade else '-1'} для ответа'
-                f' на "{self.answer.title}"'
-                f' от {self.author.username if self.author else 'Анонима'}')
+        return (f'{'+1' if self.grade > 0 else '-1'} для ответа'
+                f' на #{self.answer_id}'
+                f' от #{self.author_id if self.author_id else 'Анонима'}')
 
     class Meta:
         unique_together = ('author', 'answer')

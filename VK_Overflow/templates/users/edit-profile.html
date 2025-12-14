@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load thumbnail %}
 
 {% block tab_title %}
     Мой профиль
@@ -8,38 +9,87 @@
 
 {% block content %}
     <div class="container">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
         <div class="row justify-content-end gap-3">
             <div class="col col-3 align-content-center align-items-center text-center p-4 border border-dark-subtle rounded-4">
                 <p class="fs-5 mb-5">Изменить изображение</p>
-                <img class="w-75 mb-5" src="{% static 'assets/default-avatar.png' %}">
+                {% if user.avatar %}
+                    {% thumbnail user.avatar '512x512' crop='center' as im %}
+                    <img id="avatar-preview" class="w-75 mb-5 rounded-circle" src="{{ im.url }}">
+                    {% endthumbnail %}
+                {% else %}
+                    <img id="avatar-preview" class="w-75 mb-5 rounded-circle" src="{% static 'assets/default-avatar.png' %}">
+                {% endif %}
                 <div class="d-grid gap-2 mt-5">
-                    <button type="button" class="btn btn-outline-primary">Загрузить</button>
-                    <button type="button" class="btn btn-outline-danger">Удалить</button>
+                    <label for="{{ form.avatar.id_for_label }}" class="btn btn-outline-primary">Загрузить</label>
+                    {{ form.avatar }}
+                    {# Этот чекбокс был бы создан, если бы мы использовали ClearableFileInput, но мы всё ручками, ведь хотим красиво... #}
+                    <input type="checkbox" name="avatar-clear" id="avatar-clear_id" style="display:none">
+                    <button type="button" onclick="clear_image();" id="delete-avatar-btn" class="btn btn-outline-danger">Удалить</button>
                 </div>
             </div>
             <div class="col-8 p-4 border border-dark-subtle rounded-4">
                 <div class="edit-profile-container">
                     <div>
-                        <p>Username</p>
-                        <input class="form-control" type="text" name="username" placeholder="Введите отображаемое имя" value="{{ user.username }}">
+                        <p>{{ form.username.label }}</p>
+                        {{ form.username }}
                     </div>
                     <div>
-                        <p>E-mail</p>
-                        <input class="form-control" type="email" name="email" placeholder="your-email@could-be.here" value="{{ user.email }}">
+                        <p>{{ form.email.label }}</p>
+                        {{ form.email }}
                     </div>
                     <div>
-                        <p>GitHub</p>
-                        <input class="form-control" type="text" name="github" placeholder="github.com/<your_profile>" value="{{ user.github }}">
+                        <p>{{ form.github.label }}</p>
+                        {{ form.github }}
                     </div>
 
                     <div>
-                        <p>Telegram</p>
-                        <input class="form-control" type="text" name="telegram" placeholder="t.me/coolest_user" value="{{ user.telegram }}">
+                        <p>{{ form.telegram.label }}</p>
+                        {{ form.telegram }}
                     </div>
 
-                    <button type="button" class="btn btn-outline-primary mt-5">Сохранить изменения</button>
+                    <div>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <p style="color: firebrick">{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-primary mt-5">Сохранить изменения</button>
                 </div>
             </div>
         </div>
+    </form>
     </div>
 {% endblock content %}
+{% block scripts %}
+    <script>
+        const avatarInput = document.getElementById('{{ form.avatar.id_for_label }}');
+        const avatarPreview = document.getElementById('avatar-preview');
+        const deleteBtn = document.getElementById('delete-avatar-btn');
+        const clearCheckbox = document.getElementById('avatar-clear_id');
+        const defaultAvatarUrl = "{% static 'assets/default-avatar.png' %}";
+
+
+
+        avatarInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+                if (clearCheckbox) clearCheckbox.checked = false;
+            }
+        });
+
+        function clear_image() {
+            avatarInput.value = '';
+            avatarPreview.src = defaultAvatarUrl;
+            if (clearCheckbox) clearCheckbox.checked = true;
+        }
+    </script>
+{% endblock %}
