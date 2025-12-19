@@ -63,6 +63,13 @@ class NewAnswerForm(forms.ModelForm):
         self.author = kwargs.pop("author", None)
         super().__init__(*args, **kwargs)
 
+    def save(self, commit=True):
+        answer = super().save(commit=False)
+        answer.author = self.author
+        if commit:
+            answer.save()
+        return answer
+
     def clean_answer_text(self):
         line = self.cleaned_data['answer_text'].strip()
         if len(line) < 6:

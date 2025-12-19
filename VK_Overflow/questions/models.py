@@ -1,4 +1,6 @@
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models
+from django.urls import reverse
 
 from users.models import User
 from .managers import AnswerQuerySet, QuestionQuerySet
@@ -39,13 +41,25 @@ class Question(models.Model):
     question_text = models.TextField(blank=True, verbose_name='Детали вопроса')
     tags = models.ManyToManyField(Tag, verbose_name='Теги')
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    # best_answer = models.BooleanField(verbose_name='Лучший ответ', default=False)
     # индексируем в дб во имя страницы hot
     rating = models.IntegerField(default=0, db_index=True, verbose_name='Рейтинг')
 
     def __str__(self):
         return f'Вопрос #{self.id}'
 
+    def get_absolute_url(self):
+        return reverse("view_question", args=[self.id])
+
     class Meta:
+        indexes = [
+            GinIndex(  # GIN т.к. чтения кратно больше, чем записи
+                name='trgm_idx_title',
+                fields=['title'],
+                opclasses=['gin_trgm_ops']
+            ),
+        ]
+
         verbose_name = 'Вопрос'
         verbose_name_plural = 'Вопросы'
 

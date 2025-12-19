@@ -22,7 +22,7 @@ function updateRatingBlock(rating_block, json) {
             arrow_down.classList.remove('rating-down-clicked');
             break;
         case -1:
-            if (arrow_down.classList.contains('rating-up-clicked')) {
+            if (arrow_up.classList.contains('rating-up-clicked')) {
                 counter.textContent = String(Number(counter.textContent) - 2);
             } else {
                 counter.textContent = String(Number(counter.textContent) - 1);

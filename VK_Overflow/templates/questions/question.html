@@ -14,7 +14,7 @@
         <div class="flex-row">
             {% for tag in question.tags.all %}
             <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">
-                <a href="{% url 'view_tag' tag_name=tag.name %}" style="text-decoration: none; color:inherit">
+                <a href="{% url 'view_tag' tag_id=tag.id %}" style="text-decoration: none; color:inherit">
                     {{ tag }}
                 </a>
             </span>
@@ -40,32 +40,18 @@
         </div>
     </div>
     <div class="row justify-content-end">
-        <div class="col ps-5">
+        <div class="col ps-5" id="answers-container">
             <div class="answer-card" style="padding: 1rem">
-                <textarea class="form-control mt-1" style="resize: none" id="description" rows="3" placeholder="Напишите свой ответ"></textarea>
-                <btn class="btn btn-outline-primary mt-3">Оставить ответ</btn>
+                <form id="answer-form" method="post" action="{% url 'new_answer' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="question" value="{{ question.id }}">
+                    <textarea id="answer-text" class="form-control mt-1" style="resize: none" name="answer_text" rows="3" placeholder="Напишите свой ответ"></textarea>
+                    <div id="answer-error" class="text-danger mt-2" style="display: none;"></div>
+                    <button class="btn btn-outline-primary mt-3" type="submit">Оставить ответ</button>
+                </form>
             </div>
-
             {% for ans in answers %}
-            <div class="answer-card">
-                <div class="answer-author-card">
-                    {% if ans.author.avatar %}
-                        {% thumbnail ans.author.avatar '512x512' crop='center' as im %}
-                            <img src="{{ im.url }}">
-                        {% endthumbnail %}
-                    {% else %}
-                        <img src="{% static 'assets/default-avatar.png' %}">
-                    {% endif %}
-                    <a class="fs-5">{{ ans.author }}</a>
-                </div>
-                <p class="col-11">{{ ans.answer_text }}</p>
-
-                <div id="ans-rating-block-{{ ans.id }}" class="rating-block flex-row" style="margin-right: 1rem; float: right;">
-                    <img src="{% static "assets/arrow-up.svg" %}" class="{% if ans.user_vote == 1 %}rating-up-clicked{% endif %}" onclick="voteAnswer({{ ans.id }}, 'like')">
-                    <a>{{ ans.rating }}</a>
-                    <img src="{% static "assets/arrow-down.svg" %}" class="{% if ans.user_vote == -1 %}rating-down-clicked{% endif %}" onclick="voteAnswer({{ ans.id }}, 'dislike')">
-                </div>
-            </div>
+                {% include 'questions/answer_card.html' %}
             {% endfor %}
         </div>
     </div>
@@ -75,4 +61,5 @@
 {% block scripts %}
     <script>const CSRF_TOKEN = '{{ csrf_token }}';</script>
     <script type="text/javascript" src="{% static "js/like-dislike.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/new-answer.js" %}"></script>
 {% endblock %}

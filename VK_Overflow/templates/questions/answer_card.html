@@ -1,0 +1,28 @@
+{% load static %}
+{% load thumbnail %}
+
+<div id="answer-{{ ans.id }}" class="answer-card">
+    <div class="answer-author-card">
+        {% if ans.author.avatar %}
+            {% thumbnail ans.author.avatar '512x512' crop='center' as im %}
+                <img class="rounded-circle" src="{{ im.url }}">
+            {% endthumbnail %}
+        {% else %}
+            <img src="{% static 'assets/default-avatar.png' %}">
+        {% endif %}
+        <a class="fs-5">
+            {% if ans.author %}
+                {{ ans.author }}
+            {% else %}
+                Удалённый пользователь
+            {% endif %}
+        </a>
+    </div>
+    <p class="col-11">{{ ans.answer_text }}</p>
+
+    <div id="ans-rating-block-{{ ans.id }}" class="rating-block flex-row" style="margin-right: 1rem; float: right;">
+        <img src="{% static "assets/arrow-up.svg" %}" class="{% if ans.user_vote == 1 %}rating-up-clicked{% endif %}" onclick="voteAnswer({{ ans.id }}, 'like')">
+        <a>{{ ans.rating }}</a>
+        <img src="{% static "assets/arrow-down.svg" %}" class="{% if ans.user_vote == -1 %}rating-down-clicked{% endif %}" onclick="voteAnswer({{ ans.id }}, 'dislike')">
+    </div>
+</div>

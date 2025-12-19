@@ -5,7 +5,7 @@
     <div class="d-flex flex-wrap col-12 gap-1 p-1 justify-content-start">
         {% for tag in popular_tags %}
             <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">
-                <a style="text-decoration: none; color: inherit" href="{% url 'view_tag' tag_name=tag.name %}">
+                <a style="text-decoration: none; color: inherit" href="{% url 'view_tag' tag_id=tag.id %}">
                     {{ tag }}
                 </a>
             </span>

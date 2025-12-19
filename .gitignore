@@ -6,4 +6,7 @@ venv/
 .env
 
 /centrifugo/config.json
+config.json
+
 data/
+VK_Overflow/media/

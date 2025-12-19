@@ -1,13 +1,15 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, TrigramSimilarity
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.views.decorators.http import require_POST
 
 from core.utils import paginate
 from questions.models import Answer, AnswerGrade, Question, QuestionGrade, Tag
-from questions.forms import NewQuestionForm
+from questions.forms import NewAnswerForm, NewQuestionForm
 
 
 def index(request):
@@ -21,8 +23,8 @@ def index(request):
     )
 
 
-def view_tag(request, tag_name):
-    tag = get_object_or_404(Tag, name=tag_name)
+def view_tag(request, tag_id):
+    tag = get_object_or_404(Tag, id=tag_id)
     question_list = (Question.objects.filter(tags=tag)
                      .with_votes_from(request.user).order_by('-creation_date'))
     page_obj = paginate(question_list, request)
@@ -73,8 +75,8 @@ def new_question(request):
     if request.method == 'POST':
         form = NewQuestionForm(request.POST, author=request.user)
         if form.is_valid():
-            form.save()
-            return redirect('homepage')
+            question = form.save()
+            return redirect('view_question', question_id=question.id)
     return render(request, 'questions/new-question.html', {'form': form})
 
 
@@ -82,7 +84,7 @@ def view_question(request, question_id):
     question = get_object_or_404(Question.objects.select_related('author')
                                  .with_votes_from(request.user), id=question_id)
     answers = (Answer.objects.filter(question=question_id).with_votes_from(request.user)
-               .select_related('author').order_by('-answer_date'))
+               .select_related('author').order_by('answer_date'))
 
     return render(
         request,
@@ -93,7 +95,19 @@ def view_question(request, question_id):
         }
     )
 
+
 # AJAX handlers
+
+
+@login_required
+@require_POST
+def new_answer(request):
+    form = NewAnswerForm(request.POST, author=request.user)
+    if form.is_valid():
+        answer = form.save()
+        html = render_to_string('questions/answer_card.html', {'ans': answer}, request=request)
+        return JsonResponse({'html': html, 'id': answer.id})
+    return JsonResponse({'error': form.errors}, status=400)
 
 
 @login_required
@@ -122,3 +136,32 @@ def vote(request):
             vote.grade = -1
     vote.save()
     return JsonResponse({'user_vote': vote.grade})
+
+
+def search_suggestions(request):
+    query = request.GET.get('q', '').strip()
+
+    if len(query) < 3:
+        return JsonResponse({'results': []})
+
+    vector = SearchVector('title', weight='A') + SearchVector('question_text', weight='B')
+    search_query = SearchQuery(query)
+    questions = Question.objects.annotate(
+        rank=SearchRank(vector, search_query)
+    ).filter(rank__gte=0.4).order_by('-rating', '-rank')[:5]
+
+    if not questions:
+        questions = Question.objects.annotate(
+            similarity=TrigramSimilarity('title', query)
+        ).filter(similarity__gte=0.2).order_by('-similarity', '-rating')[:5]
+
+    results = [
+        {
+            'id': q.id,
+            'title': q.title,
+            'url': q.get_absolute_url(),
+            'likes': q.rating
+        } for q in questions
+    ]
+
+    return JsonResponse({'results': results})
