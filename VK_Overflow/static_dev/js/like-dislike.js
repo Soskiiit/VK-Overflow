@@ -66,3 +66,33 @@ function voteAnswer(answer_id, action) {
             updateRatingBlock(rating_block, json);
     })
 }
+
+function markBestAnswer(questionId, answerId, authorId) {
+    fetch('/set-best-answer/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': CSRF_TOKEN,
+        },
+        body: JSON.stringify({
+            question_id: questionId,
+            answer_id: answerId,
+            author: authorId
+        })
+    }).then(response => response.json()).then(json => {
+        if (json.status === 'ok') {
+            document.querySelectorAll('.best-answer-icon').forEach(icon => {
+                icon.classList.remove('text-success');
+                icon.classList.add('text-secondary');
+            });
+
+            const clickedIcon = document.getElementById(`best-answer-icon-${answerId}`);
+            if (clickedIcon) {
+                clickedIcon.classList.remove('text-secondary');
+                clickedIcon.classList.add('text-success');
+            }
+        } else {
+            console.error(json.error);
+        }
+    });
+}

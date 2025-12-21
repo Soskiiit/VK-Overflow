@@ -12,5 +12,6 @@ urlpatterns = [
     path('hot/', views.hot_questions, name='hot_questions'),
     path('answer/', views.new_answer, name='new_answer'),
     path('vote/', views.vote, name='vote_question'),
-    path('search-suggestions/', views.search_suggestions, name='search_suggestions')
+    path('search-suggestions/', views.search_suggestions, name='search_suggestions'),
+    path('set-best-answer/', views.set_best_answer, name='set_best_answer'),
 ]

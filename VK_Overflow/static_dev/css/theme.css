@@ -193,6 +193,16 @@ footer {
     white-space: pre-wrap;
 }
 
+.best-answer-box {
+    padding: .5rem 0;
+    margin-bottom: -40px;
+    border-top: 1px solid;
+    border-image-source: linear-gradient(to right, #AAA, transparent);
+    border-image-slice: 1;
+    position: relative;
+    width: 50%;
+}
+
 .search-container {
     position: absolute;
     top: 100%;

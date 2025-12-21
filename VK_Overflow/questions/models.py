@@ -41,7 +41,11 @@ class Question(models.Model):
     question_text = models.TextField(blank=True, verbose_name='Детали вопроса')
     tags = models.ManyToManyField(Tag, verbose_name='Теги')
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
-    # best_answer = models.BooleanField(verbose_name='Лучший ответ', default=False)
+    best_answer = models.OneToOneField(
+        'Answer',
+        null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='best_for', verbose_name='Лучший ответ'
+    )
     # индексируем в дб во имя страницы hot
     rating = models.IntegerField(default=0, db_index=True, verbose_name='Рейтинг')
 

@@ -138,6 +138,29 @@ def vote(request):
     return JsonResponse({'user_vote': vote.grade})
 
 
+@login_required
+@require_POST
+def set_best_answer(request):
+    data = json.loads(request.body.decode('utf-8'))
+
+    if request.user.id != data['author']:
+        return JsonResponse({'error': 'Only author can set best answer'}, status=400)
+
+    try:
+        question = Question.objects.get(id=data['question_id'])
+    except Question.DoesNotExist:
+        return JsonResponse({'error': 'Question doesn\'t exist'}, status=404)
+
+    try:
+        answer = Answer.objects.get(id=data['answer_id'])
+    except Answer.DoesNotExist:
+        return JsonResponse({'error': 'Answer doesn\'t exist'}, status=404)
+
+    question.best_answer = answer
+    question.save()
+    return JsonResponse({'status': 'ok'})
+
+
 def search_suggestions(request):
     query = request.GET.get('q', '').strip()
 
