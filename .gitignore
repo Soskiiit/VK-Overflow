@@ -10,3 +10,6 @@ config.json
 
 data/
 VK_Overflow/media/
+
+nginx_access.log
+nginx_error.log

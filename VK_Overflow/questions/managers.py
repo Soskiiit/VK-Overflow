@@ -8,6 +8,10 @@ class AnswerQuerySet(models.QuerySet):
     def with_votes_from(self, user):
         # Чтоб избежать циклических импортов
         AnswerGrade = apps.get_model('questions', 'AnswerGrade')
+        if not user.is_authenticated:
+            return self.annotate(
+                user_vote=models.Value(0, output_field=models.IntegerField())
+            )
         return self.annotate(
             user_vote=Coalesce(
                 models.Subquery(
