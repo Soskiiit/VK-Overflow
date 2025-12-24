@@ -70,7 +70,7 @@ ratio adjusts count of records in DB
 
 Let's use **Gunicorn** and **Nginx**.
 
-0. Ensure that Environment configured properly (DEBUG is False,  etc.)
+0. Ensure that Environment configured properly (DEBUG is False, absolute path to static files in nginx config etc.)
 
 1. Install dependencies:
     ```sh
