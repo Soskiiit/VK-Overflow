@@ -62,4 +62,42 @@
     <script>const CSRF_TOKEN = '{{ csrf_token }}';</script>
     <script type="text/javascript" src="{% static "js/like-dislike.js" %}"></script>
     <script type="text/javascript" src="{% static "js/new-answer.js" %}"></script>
+    <script src="https://unpkg.com/centrifuge@5.4.0/dist/centrifuge.js"></script>
+    <script>
+        const centrifuge = new Centrifuge('{{ centrifugo_ws_url }}', {
+            token: '{{ centrifugo_token }}'
+        });
+
+        centrifuge.on('connecting', function (ctx) {
+            console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
+        }).on('connected', function (ctx) {
+            console.log(`connected over ${ctx.transport}`);
+        }).on('disconnected', function (ctx) {
+            console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
+        }).connect();
+
+        const sub = centrifuge.newSubscription("question_{{ question.id }}");
+
+        sub.on('publication', function (ctx) {
+            const data = ctx.data;
+            const answersContainer = document.getElementById('answers-container');
+
+            const newAnswerHtml = `
+                <div id="answer-${data.id}" class="answer-card">
+                    <div class="answer-author-card">
+                        <img src="${data.author_avatar}">
+                        <a class="fs-5">${data.author}</a>
+                    </div>
+                    <p class="col-11">${data.text}</p>
+
+                    <div id="ans-rating-block-${data.id}" class="rating-block flex-row" style="margin-right: 1rem; float: right;">
+                        <img src="{% static "assets/arrow-up.svg" %}" onclick="voteAnswer(${data.id}, 'like')">
+                        <a>${data.rating}</a>
+                        <img src="{% static "assets/arrow-down.svg" %}" onclick="voteAnswer(${data.id}, 'dislike')">
+                    </div>
+                </div>
+            `;
+            answersContainer.insertAdjacentHTML('beforeend', newAnswerHtml);
+        }).subscribe();
+    </script>
 {% endblock %}

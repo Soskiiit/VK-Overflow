@@ -1,3 +1,5 @@
+# flake8: noqa: F231
+
 from os import getenv
 from pathlib import Path
 
@@ -16,6 +18,14 @@ INTERNAL_IPS = list(getenv('DJANGO_INTERNAL_IPS', '127.0.0.1,localhost').split('
 
 MEMCACHED_HOST = getenv('MEMCACHED_HOST', 'localhost')
 MEMCACHED_PORT = getenv('MEMCACHED_PORT', '11211')
+
+CENTRIFUGO_HOST = getenv('CENTRIFUGO_HOST', 'localhost')
+CENTRIFUGO_PORT = getenv('CENTRIFUGO_PORT', '8001')
+
+CENTRIFUGO_API_URL = f'http://{CENTRIFUGO_HOST}:{CENTRIFUGO_PORT}/api'
+CENTRIFUGO_WS_URL = f'ws://{CENTRIFUGO_HOST}:{CENTRIFUGO_PORT}/connection/websocket'
+CENTRIFUGO_API_KEY = getenv('CENTRIFUGO_API_KEY', 'api_key')
+CENTRIFUGO_TOKEN_HMAC_SECRET_KEY = getenv('CENTRIFUGO_TOKEN_HMAC_SECRET_KEY', 'seeecret_key')
 
 CACHE_TTL = int(getenv('CACHE_TTL', '1800'))  # in seconds
 
@@ -92,7 +102,7 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION': f'{MEMCACHED_HOST}:{MEMCACHED_PORT}',  # noqa: E231
+        'LOCATION': f'{MEMCACHED_HOST}:{MEMCACHED_PORT}',
     }
 }
 

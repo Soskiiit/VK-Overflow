@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, TrigramSimilarity
 from django.http import JsonResponse
@@ -10,6 +11,7 @@ from django.views.decorators.http import require_POST
 from core.utils import paginate
 from questions.models import Answer, AnswerGrade, Question, QuestionGrade, Tag
 from questions.forms import NewAnswerForm, NewQuestionForm
+from questions.utils import get_centrifugo_token
 
 
 def index(request):
@@ -90,8 +92,14 @@ def view_question(request, question_id):
         request,
         'questions/question.html',
         {
-            'question': question,
-            'answers': answers,
+            'question':
+                question,
+            'answers':
+                answers,
+            'centrifugo_ws_url':
+                settings.CENTRIFUGO_WS_URL,
+            'centrifugo_token':
+                get_centrifugo_token(request.user.id) if request.user.is_authenticated else '',
         }
     )
 
