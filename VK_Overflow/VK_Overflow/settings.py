@@ -14,9 +14,10 @@ DEBUG = getenv('DJANGO_DEBUG', '0').lower() in ('1', 'true', 't', 'y', 'yes')
 ALLOWED_HOSTS = list(getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(','))
 INTERNAL_IPS = list(getenv('DJANGO_INTERNAL_IPS', '127.0.0.1,localhost').split(','))
 
-MEMCACHED_HOST = getenv("MEMCACHED_HOST", "localhost")
-MEMCACHED_PORT = getenv("MEMCACHED_PORT", "11211")
+MEMCACHED_HOST = getenv('MEMCACHED_HOST', 'localhost')
+MEMCACHED_PORT = getenv('MEMCACHED_PORT', '11211')
 
+CACHE_TTL = int(getenv('CACHE_TTL', '1800'))  # in seconds
 
 if DEBUG:
     ALLOWED_HOSTS = ['*']
@@ -110,6 +111,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+TASKS = {'default': {'BACKEND': 'django.tasks.backends.immediate.ImmediateBackend'}}
+
 AUTH_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'ru-ru'
@@ -126,16 +129,17 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATIC_ROOT = BASE_DIR / "static"
+STATIC_ROOT = BASE_DIR / 'static'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static_dev",
+    BASE_DIR / 'static_dev',
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = BASE_DIR / 'media/'
 MEDIA_URL = '/media/'
+
 
 # Uncomment if you will use S3-like storage (https://github.com/jazzband/sorl-thumbnail/issues/351)
 # THUMBNAIL_FORCE_OVERWRITE = True
