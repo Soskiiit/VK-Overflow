@@ -38,7 +38,7 @@ class Question(models.Model):
         User, null=True, blank=True, on_delete=models.SET_NULL,
         related_name='questions', verbose_name='Задан пользователем'
     )
-    question_text = models.TextField(blank=True, verbose_name='Детали вопроса')
+    question_text = models.TextField(blank=True, verbose_name='Детали вопроса', max_length=6000)
     tags = models.ManyToManyField(Tag, verbose_name='Теги')
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     best_answer = models.OneToOneField(
@@ -75,7 +75,7 @@ class Answer(models.Model):
                                  related_name='answers', verbose_name='Вопрос')
     author = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL,
                                related_name='answers', verbose_name='Автор')
-    answer_text = models.TextField(verbose_name='Содержание ответа')
+    answer_text = models.TextField(max_length=5000, verbose_name='Содержание ответа')
     answer_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата ответа')
     rating = models.IntegerField(default=0, verbose_name='Рейтинг')
 

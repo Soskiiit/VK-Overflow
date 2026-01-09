@@ -34,7 +34,7 @@ function updateRatingBlock(rating_block, json) {
 }
 
 function voteQuestion(question_id, action) {
-    fetch('/vote/', {
+    fetch(`/vote_question/${question_id}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ function voteQuestion(question_id, action) {
 }
 
 function voteAnswer(answer_id, action) {
-    fetch('/vote/', {
+    fetch(`/vote_answer/${answer_id}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ function voteAnswer(answer_id, action) {
     })
 }
 
-function markBestAnswer(questionId, answerId, authorId) {
+function markBestAnswer(questionId, answerId) {
     fetch('/set-best-answer/', {
         method: 'POST',
         headers: {
@@ -76,8 +76,7 @@ function markBestAnswer(questionId, answerId, authorId) {
         },
         body: JSON.stringify({
             question_id: questionId,
-            answer_id: answerId,
-            author: authorId
+            answer_id: answerId
         })
     }).then(response => response.json()).then(json => {
         if (json.status === 'ok') {

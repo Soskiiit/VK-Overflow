@@ -5,9 +5,13 @@ from .models import Answer, Question, Tag
 
 
 class NewQuestionForm(forms.ModelForm):
-    title = forms.CharField(widget=forms.TextInput(
-        attrs={'class': 'form-control mt-1', 'placeholder': 'Заголовок вашего вопроса'}
-    ))
+    title = forms.CharField(
+        min_length=5,
+        error_messages={'min_length': 'Заголовок не может быть короче 5 символов'},
+        widget=forms.TextInput(
+            attrs={'class': 'form-control mt-1', 'placeholder': 'Заголовок вашего вопроса'}
+        )
+    )
     question_text = forms.CharField(widget=forms.Textarea(
         attrs={'class': 'form-control mt-1',
                'rows': '3',
@@ -24,11 +28,23 @@ class NewQuestionForm(forms.ModelForm):
     def save(self, commit=True):
         obj = super().save(commit=False)
         obj.author = self.author
-        obj.save()  # Получаем ID ток при commit'e, а он нужен для вязки m2m связей
-        tags = self.get_tags()
-        for tag in tags:
-            obj.tags.add(tag)
-        obj.save()
+
+        if commit:
+            obj.save()  # Получаем ID ток при commit'e, а он нужен для вязки m2m связей
+            tag_names = self.cleaned_data['tags']
+            existing_tags_map = {tag.name: tag for tag in Tag.objects.filter(name__in=tag_names)}
+
+            tags_to_create = []
+            for tag_name in set(tag_names) - set(existing_tags_map.keys()):
+                tags_to_create.append(Tag(name=tag_name))
+
+            created_tags = []
+            if tags_to_create:
+                created_tags = Tag.objects.bulk_create(tags_to_create, batch_size=150)
+
+            tags_to_assign_to_question = created_tags + list(existing_tags_map.values())
+            obj.tags.set(tags_to_assign_to_question)
+
         return obj
 
     def clean_tags(self):
@@ -43,13 +59,6 @@ class NewQuestionForm(forms.ModelForm):
                     code='short_tag'
                 )
         return tags
-
-    def get_tags(self):
-        for tag in self.cleaned_data['tags']:
-            tag_obj, is_new = Tag.objects.get_or_create(name=tag)
-            if is_new:
-                tag_obj.save()
-            yield tag_obj
 
     class Meta:
         model = Question
@@ -75,6 +84,11 @@ class NewAnswerForm(forms.ModelForm):
         if len(line) < 6:
             raise ValidationError(
                 'Ответ не может быть короче 6 символов',
+                code='short_answer'
+            )
+        if len(line) > 4000:
+            raise ValidationError(
+                'Ответ должен быть длиной не более 4000 символов',
                 code='short_answer'
             )
         return line

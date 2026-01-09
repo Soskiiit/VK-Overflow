@@ -11,7 +11,9 @@ urlpatterns = [
     path('tag/<int:tag_id>', views.view_tag, name='view_tag'),
     path('hot/', views.hot_questions, name='hot_questions'),
     path('answer/', views.new_answer, name='new_answer'),
-    path('vote/', views.vote, name='vote_question'),
+    path('vote_question/<int:question_id>',
+         views.VoteQuestionView.as_view(), name='vote_question'),
+    path('vote_answer/<int:answer_id>', views.VoteAnswerView.as_view(), name='vote_answer'),
     path('search-suggestions/', views.search_suggestions, name='search_suggestions'),
-    path('set-best-answer/', views.set_best_answer, name='set_best_answer'),
+    path('set-best-answer/', views.SetBestAnswerView.as_view(), name='set_best_answer'),
 ]

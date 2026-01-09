@@ -7,6 +7,10 @@ document.getElementById('answer-form').addEventListener('submit', function(e) {
         errorDiv.textContent = 'Ответ должен быть не короче 6 символов';
         errorDiv.style.display = 'block';
         return;
+    } else if (text.length > 4000) {
+        errorDiv.textContent = 'Ответ должен быть длиной не более 4000 символов';
+        errorDiv.style.display = 'block';
+        return;
     } else {
         errorDiv.style.display = 'none';
     }

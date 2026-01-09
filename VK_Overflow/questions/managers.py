@@ -7,19 +7,21 @@ from django.db.models.functions import Coalesce
 class AnswerQuerySet(models.QuerySet):
     def with_votes_from(self, user):
         # Чтоб избежать циклических импортов
-        AnswerGrade = apps.get_model('questions', 'AnswerGrade')
-        return self.annotate(
-            user_vote=Coalesce(
-                models.Subquery(
-                    AnswerGrade.objects.filter(
-                        answer=models.OuterRef('pk'),
-                        author=user
-                    ).values('grade')[:1]
-                ),
-                models.Value(0),
-                output_field=models.IntegerField()
+        if user.is_authenticated:
+            AnswerGrade = apps.get_model('questions', 'AnswerGrade')
+            return self.annotate(
+                user_vote=Coalesce(
+                    models.Subquery(
+                        AnswerGrade.objects.filter(
+                            answer=models.OuterRef('pk'),
+                            author=user
+                        ).values('grade')[:1]
+                    ),
+                    models.Value(0),
+                    output_field=models.IntegerField()
+                )
             )
-        )
+        return self.annotate(user_vote=models.Value(0, output_field=models.IntegerField()))
 
 
 class QuestionQuerySet(models.QuerySet):

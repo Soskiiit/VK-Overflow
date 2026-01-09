@@ -11,12 +11,23 @@
             <p class="fs-4 mb-4">Задать вопрос</p>
             <label for="title">Заголовок</label>
             {{ form.title }}
+            {% for err in form.title.errors %}
+                <p style="color: firebrick">{{ err }}</p>
+            {% endfor %}
+
 
             <label class="mt-3" for="description">Описание вопроса</label>
             {{ form.question_text }}
+            {% for err in form.question_text.errors %}
+                <p style="color: firebrick">{{ err }}</p>
+            {% endfor %}
+
 
             <label class="mt-3" for="tags">Теги</label>
             {{ form.tags }}
+            {% for err in form.tags.errors %}
+                <p style="color: firebrick">{{ err }}</p>
+            {% endfor %}
 
             {% csrf_token %}
             <button type="submit" class="btn btn-primary mt-5">Создать вопрос</button>

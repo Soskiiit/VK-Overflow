@@ -21,7 +21,7 @@
     <p class="col-11">{{ ans.answer_text }}</p>
 
     {% if user == question.author %}
-         <div class="best-answer-box" style="cursor: pointer;" onclick="markBestAnswer({{ question.id }}, {{ ans.id }}, {{ user.id }})">
+         <div class="best-answer-box" style="cursor: pointer;" onclick="markBestAnswer({{ question.id }}, {{ ans.id }})">
             <svg id="best-answer-icon-{{ ans.id }}" class="best-answer-icon {% if question.best_answer_id == ans.id %}text-success{% else %}text-secondary{% endif %}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             <a>Лучший ответ</a>
          </div>
