@@ -1,17 +1,27 @@
 {% load static %}
+{% load thumbnail %}
+
 <header class="p-3 border-bottom" style="margin-bottom: 2.5rem;">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-between justify-content-lg-between">
             <a href="{% url "homepage" %}" class="nav-link px-2 fs-5 link-secondary">VK Overflow</a>
             <form class="col-12 col-lg-9 mb-3 mb-lg-0 me-lg-3" role="search">
-                <input type="search" class="form-control search-bar" placeholder="Найти вопрос" aria-label="Search">
+                <input type="search" name="q" autocomplete="off" class="form-control search-bar" placeholder="Найти вопрос" aria-label="Search">
             </form>
             {% if request.user.is_authenticated %}
             <div class="dropdown text-end">
                 <a href="#"
                    class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
                    data-bs-toggle="dropdown" aria-expanded="false"> <img
-                        src="{% static "assets/default-avatar.png" %}" alt="mdo" width="40" height="40"
+                        src="
+                        {% if request.user.avatar %}
+                        {% thumbnail request.user.avatar '128x128' crop='center' as im %}
+                           {{ im.url }}
+                        {% endthumbnail %}
+                        {% else %}
+                            {% static "assets/default-avatar.png" %}
+                        {% endif %}
+                        " alt="mdo" width="40" height="40"
                         class="rounded-circle"> </a>
                 <ul class="dropdown-menu text-small">
                     <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Профиль</a></li>
@@ -30,4 +40,5 @@
             {% endif %}
         </div>
     </div>
+    <script src="{% static 'js/search.js' %}"></script>
 </header>

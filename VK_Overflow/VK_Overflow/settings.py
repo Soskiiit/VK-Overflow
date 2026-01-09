@@ -29,11 +29,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
 
     # Project apps
     'core.apps.CoreConfig',
     'questions.apps.QuestionsConfig',
     'users.apps.UsersConfig',
+
+    # 3rd-party apps
+    'sorl.thumbnail',
 ]
 if DEBUG:
     INSTALLED_APPS += ['debug_toolbar']
@@ -46,7 +50,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
 ]
 
 if settings.DEBUG:
@@ -128,3 +131,9 @@ STATICFILES_DIRS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_ROOT = BASE_DIR / 'media/'
+MEDIA_URL = '/media/'
+
+# Uncomment if you will use S3-like storage (https://github.com/jazzband/sorl-thumbnail/issues/351)
+# THUMBNAIL_FORCE_OVERWRITE = True

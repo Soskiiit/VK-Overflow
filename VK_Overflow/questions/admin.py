@@ -13,7 +13,7 @@ class AnswerAdmin(admin.ModelAdmin):
 class QuestionAdmin(admin.ModelAdmin):
     fields = ('title', 'author', 'tags', 'question_text', 'creation_date')
     readonly_fields = ('creation_date',)
-    list_display = ('title', 'author')
+    list_display = ('title', 'author_id')
 
 
 admin.site.register(Tag)

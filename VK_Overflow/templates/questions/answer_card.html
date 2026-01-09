@@ -1,0 +1,41 @@
+{% load static %}
+{% load thumbnail %}
+
+<div id="answer-{{ ans.id }}" class="answer-card">
+    <div class="answer-author-card">
+        {% if ans.author.avatar %}
+            {% thumbnail ans.author.avatar '512x512' crop='center' as im %}
+                <img class="rounded-circle" src="{{ im.url }}">
+            {% endthumbnail %}
+        {% else %}
+            <img src="{% static 'assets/default-avatar.png' %}">
+        {% endif %}
+        <a class="fs-5">
+            {% if ans.author %}
+                {{ ans.author }}
+            {% else %}
+                Удалённый пользователь
+            {% endif %}
+        </a>
+    </div>
+    <p class="col-11">{{ ans.answer_text }}</p>
+
+    {% if user == question.author %}
+         <div class="best-answer-box" style="cursor: pointer;" onclick="markBestAnswer({{ question.id }}, {{ ans.id }})">
+            <svg id="best-answer-icon-{{ ans.id }}" class="best-answer-icon {% if question.best_answer_id == ans.id %}text-success{% else %}text-secondary{% endif %}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <a>Лучший ответ</a>
+         </div>
+    {% elif question.best_answer_id == ans.id %}
+         <div class="best-answer-box">
+            <svg class="text-success" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <a>Лучший ответ</a>
+         </div>
+    {% endif %}
+
+
+    <div id="ans-rating-block-{{ ans.id }}" class="rating-block flex-row" style="margin-right: 1rem; float: right;">
+        <img src="{% static "assets/arrow-up.svg" %}" class="{% if ans.user_vote == 1 %}rating-up-clicked{% endif %}" onclick="voteAnswer({{ ans.id }}, 'like')">
+        <a>{{ ans.rating }}</a>
+        <img src="{% static "assets/arrow-down.svg" %}" class="{% if ans.user_vote == -1 %}rating-down-clicked{% endif %}" onclick="voteAnswer({{ ans.id }}, 'dislike')">
+    </div>
+</div>
