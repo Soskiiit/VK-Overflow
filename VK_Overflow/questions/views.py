@@ -87,18 +87,21 @@ def view_question(request, question_id):
     answers = (Answer.objects.filter(question=question_id).with_votes_from(request.user)
                .select_related('author').order_by('answer_date'))
 
+    if request.user.is_authenticated:
+        centrifugo_user_id = request.user.id
+    else:
+        if not request.session.session_key:
+            request.session.create()
+        centrifugo_user_id = request.session.session_key
+
     return render(
         request,
         'questions/question.html',
         {
-            'question':
-                question,
-            'answers':
-                answers,
-            'centrifugo_ws_url':
-                settings.CENTRIFUGO_WS_URL,
-            'centrifugo_token':
-                get_centrifugo_token(request.user.id) if request.user.is_authenticated else '',
+            'question': question,
+            'answers': answers,
+            'centrifugo_ws_url': settings.CENTRIFUGO_WS_URL,
+            'centrifugo_token': get_centrifugo_token(centrifugo_user_id),
         }
     )
 

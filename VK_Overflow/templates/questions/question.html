@@ -35,6 +35,7 @@
     </div>
     <div class="row justify-content-end">
         <div class="col ps-5" id="answers-container">
+        {% if request.user.is_authenticated %}
             <div class="answer-card" style="padding: 1rem">
                 <form id="answer-form" method="post" action="{% url 'new_answer' %}">
                     {% csrf_token %}
@@ -44,6 +45,9 @@
                     <button class="btn btn-outline-primary mt-3" type="submit">Оставить ответ</button>
                 </form>
             </div>
+        {% else %}
+            <p style="color: #777777; padding-left: 1rem;">Оставлять ответы могут лишь авторизованные пользователи</p>
+        {% endif %}
             {% for ans in answers %}
                 {% include 'questions/answer_card.html' %}
             {% endfor %}
