@@ -1,12 +1,9 @@
-import json
-import urllib.request
-
-from django.conf import settings
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 
+from core.sse_bridges import Centrifugo
 from questions.models import Answer, AnswerGrade, QuestionGrade
 
 
@@ -43,31 +40,9 @@ def notify_new_answer(sender, instance, created, **kwargs):
             'id': instance.id,
             'text': instance.answer_text,
             'author': str(instance.author) if instance.author else 'Удалённый пользователь',
-            'author_avatar': instance.author.avatar.url
-            if instance.author and instance.author.avatar else '/static/assets/default-avatar.png',
+            'author_avatar': instance.author.get_avatar_thumbnail(),
             'rating': instance.rating,
             'question_id': instance.question.id
         }
 
-        payload = {
-            'method': 'publish',
-            'params': {
-                'channel': f'question_{instance.question.id}',
-                'data': data
-            }
-        }
-
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': f'apikey {settings.CENTRIFUGO_API_KEY}'
-        }
-
-        try:
-            req = urllib.request.Request(
-                settings.CENTRIFUGO_API_URL,
-                data=json.dumps(payload).encode('utf-8'),
-                headers=headers
-            )
-            urllib.request.urlopen(req)
-        except Exception as e:
-            print(f"Failed to publish to Centrifugo: {e}")
+        Centrifugo.publish(instance.question.get_centrifuge_channel(), data)

@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, TrigramSimilarity
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
 from core.utils import paginate
@@ -112,9 +111,8 @@ def view_question(request, question_id):
 def new_answer(request):
     form = NewAnswerForm(request.POST, author=request.user)
     if form.is_valid():
-        answer = form.save()
-        html = render_to_string('questions/answer_card.html', {'ans': answer}, request=request)
-        return JsonResponse({'html': html, 'id': answer.id})
+        form.save()
+        return JsonResponse({'status': 'ok'})
     return JsonResponse({'error': form.errors}, status=400)
 
 

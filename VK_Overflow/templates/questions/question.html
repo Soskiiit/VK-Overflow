@@ -22,13 +22,7 @@
         </div>
 
         <div class="author-card">
-            {% if question.author.avatar %}
-                {% thumbnail question.author.avatar '512x512' crop='center' as im %}
-                    <img class="rounded-circle" src="{{ im.url }}">
-                {% endthumbnail %}
-            {% else %}
-                <img class="rounded-circle" src="{% static 'assets/default-avatar.png' %}">
-            {% endif %}
+            <img class="rounded-circle" src="{{ question.author.get_avatar_thumbnail }}">
             <a>{{ question.author }}</a>
         </div>
 
@@ -59,11 +53,25 @@
 
 
 {% block scripts %}
-    <script>const CSRF_TOKEN = '{{ csrf_token }}';</script>
+    <script>
+        const CSRF_TOKEN = '{{ csrf_token }}';
+        const USER_IS_AUTHOR = {% if user == question.author %}true{% else %}false{% endif %};
+    </script>
     <script type="text/javascript" src="{% static "js/like-dislike.js" %}"></script>
     <script type="text/javascript" src="{% static "js/new-answer.js" %}"></script>
     <script src="https://unpkg.com/centrifuge@5.4.0/dist/centrifuge.js"></script>
     <script>
+        function escapeHtml(str) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            };
+            return str.replace(/[&<>"']/g, match => map[match]);
+        }
+
         const centrifuge = new Centrifuge('{{ centrifugo_ws_url }}', {
             token: '{{ centrifugo_token }}'
         });
@@ -82,13 +90,27 @@
             const data = ctx.data;
             const answersContainer = document.getElementById('answers-container');
 
+            let bestAnswerHtml = '';
+            if (USER_IS_AUTHOR) {
+                bestAnswerHtml = `
+                     <div class="best-answer-box" style="cursor: pointer;" onclick="markBestAnswer(${data.question_id}, ${data.id}, {{ user.id }})">
+                        <svg id="best-answer-icon-${data.id}" class="best-answer-icon text-secondary" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <a>Лучший ответ</a>
+                     </div>
+                 `;
+            } else {
+                bestAnswerHtml = ``;
+            }
+
             const newAnswerHtml = `
                 <div id="answer-${data.id}" class="answer-card">
                     <div class="answer-author-card">
                         <img src="${data.author_avatar}">
                         <a class="fs-5">${data.author}</a>
                     </div>
-                    <p class="col-11">${data.text}</p>
+                    <p class="col-11">${escapeHtml(data.text)}</p>
+
+                    ${bestAnswerHtml}
 
                     <div id="ans-rating-block-${data.id}" class="rating-block flex-row" style="margin-right: 1rem; float: right;">
                         <img src="{% static "assets/arrow-up.svg" %}" onclick="voteAnswer(${data.id}, 'like')">
@@ -98,6 +120,12 @@
                 </div>
             `;
             answersContainer.insertAdjacentHTML('beforeend', newAnswerHtml);
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                left: 0,
+                behavior: 'smooth'
+            });
+
         }).subscribe();
     </script>
 {% endblock %}

@@ -53,7 +53,10 @@ class Question(models.Model):
         return f'Вопрос #{self.id}'
 
     def get_absolute_url(self):
-        return reverse("view_question", args=[self.id])
+        return reverse('view_question', args=[self.id])
+
+    def get_centrifuge_channel(self):
+        return f'question_{self.pk}'
 
     class Meta:
         indexes = [
