@@ -3,7 +3,8 @@ from django.dispatch import receiver
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 
-from questions.models import AnswerGrade, QuestionGrade
+from core.sse_bridges import Centrifugo
+from questions.models import Answer, AnswerGrade, QuestionGrade
 
 
 @receiver(post_save, sender=QuestionGrade)
@@ -30,3 +31,18 @@ def update_answer_rating(sender, instance, **kwargs):
 
     answer.rating = new_rating
     answer.save(update_fields=['rating'])
+
+
+@receiver(post_save, sender=Answer)
+def notify_new_answer(sender, instance, created, **kwargs):
+    if created:
+        data = {
+            'id': instance.id,
+            'text': instance.answer_text,
+            'author': str(instance.author) if instance.author else 'Удалённый пользователь',
+            'author_avatar': instance.author.get_avatar_thumbnail(),
+            'rating': instance.rating,
+            'question_id': instance.question.id
+        }
+
+        Centrifugo.publish(instance.question.get_centrifuge_channel(), data)

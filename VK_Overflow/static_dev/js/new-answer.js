@@ -26,25 +26,31 @@ document.getElementById('answer-form').addEventListener('submit', function(e) {
             return response.json();
         }
         return response.json().then(data => {
-            throw new Error(data.error || 'Network response was not ok.');
+            if (data.error) {
+                throw data.error;
+            }
+            throw new Error('Network response was not ok.');
         });
     })
     .then(data => {
-        if (data.html) {
-            const container = document.getElementById('answers-container');
-            container.insertAdjacentHTML('beforeend', data.html);
-
+        if (data.status === 'ok') {
             document.getElementById('answer-text').value = '';
-
-            const newAnswer = document.getElementById('answer-' + data.id);
-            if (newAnswer) {
-                newAnswer.scrollIntoView({ behavior: 'smooth' });
-            }
+            errorDiv.style.display = 'none';
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        errorDiv.textContent = 'Произошла ошибка при отправке ответа.';
+        let errorMessage = 'Произошла ошибка при отправке ответа.';
+        
+        if (typeof error === 'object' && error !== null && !(error instanceof Error)) {
+            errorMessage = Object.values(error).join('\n');
+        } else if (error instanceof Error) {
+            errorMessage = error.message;
+        } else if (typeof error === 'string') {
+            errorMessage = error;
+        }
+        
+        errorDiv.textContent = errorMessage;
         errorDiv.style.display = 'block';
     });
 });

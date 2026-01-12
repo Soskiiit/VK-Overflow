@@ -10,11 +10,7 @@
     [More here](https://docs.docker.com/compose/install/)
 
 2. Set environment variables or configure .env (`.env.example` may help you)
-3. Create centrifugo config with:
-    ```shell
-   docker run --rm -v$PWD:/centrifugo centrifugo/centrifugo:v6 centrifugo genconfig
-    ```
-4. Configure centrifugo, by editing ./centrifugo/config.json
+4. Configure centrifugo, by editing ./centrifugo/config.json (./centrifugo/config.json.example may help you)
 5. Configure Django backend (I'll update this point later 🥸) 
 6. Start up postgres (and detach it or create new terminal) and apply migrations
     ```shell
@@ -95,7 +91,12 @@ Let's use **Gunicorn** and **Nginx**.
     sudo nginx -c $(pwd)/../vk_overflow_nginx.conf
     ```
 
-5. **Start Gunicorn:**
+5. **Start workers:**
+   This starts workers that keep the cache valid
+    ```sh
+   ./manage.py run_scheduler
+    ```
+6. **Start Gunicorn:**
     This starts the Django application workers.
     ```sh
     gunicorn

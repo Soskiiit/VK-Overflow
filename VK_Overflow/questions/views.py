@@ -1,15 +1,16 @@
 import json
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, TrigramSimilarity
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
 from core.utils import paginate
 from questions.models import Answer, AnswerGrade, Question, QuestionGrade, Tag
 from questions.forms import NewAnswerForm, NewQuestionForm
+from questions.utils import get_centrifugo_token
 
 
 def index(request):
@@ -86,12 +87,21 @@ def view_question(request, question_id):
     answers = (Answer.objects.filter(question=question_id).with_votes_from(request.user)
                .select_related('author').order_by('answer_date'))
 
+    if request.user.is_authenticated:
+        centrifugo_user_id = request.user.id
+    else:
+        if not request.session.session_key:
+            request.session.create()
+        centrifugo_user_id = request.session.session_key
+
     return render(
         request,
         'questions/question.html',
         {
             'question': question,
             'answers': answers,
+            'centrifugo_ws_url': settings.CENTRIFUGO_WS_URL,
+            'centrifugo_token': get_centrifugo_token(centrifugo_user_id),
         }
     )
 
@@ -104,9 +114,8 @@ def view_question(request, question_id):
 def new_answer(request):
     form = NewAnswerForm(request.POST, author=request.user)
     if form.is_valid():
-        answer = form.save()
-        html = render_to_string('questions/answer_card.html', {'ans': answer}, request=request)
-        return JsonResponse({'html': html, 'id': answer.id})
+        form.save()
+        return JsonResponse({'status': 'ok'})
     return JsonResponse({'error': form.errors}, status=400)
 
 

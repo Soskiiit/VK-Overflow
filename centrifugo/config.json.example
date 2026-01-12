@@ -1,0 +1,24 @@
+{
+  "channel": {
+    "without_namespace": {
+      "allow_subscribe_for_client": true
+    }
+  },
+  "client": {
+    "token": {
+      "hmac_secret_key": "SecretKeyForCentrifugo"
+    },
+    "allowed_origins": [
+      "http://localhost:8000",
+      "http://127.0.0.1:8000"
+    ]
+  },
+  "admin": {
+    "enabled": true,
+    "password": "rjs6DMJGe-TLJbZp8BbEng",
+    "secret": "AnotherSecretKeyForCentrifugo"
+  },
+  "http_api": {
+    "key": "ApiKeyForCentrifugo"
+  }
+}
